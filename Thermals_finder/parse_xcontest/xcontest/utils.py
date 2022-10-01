@@ -60,7 +60,7 @@ def _set_params(latitude: float, longitude: float, radius: int = 5000, mode: str
     assert isinstance(radius, int) & (radius > 0), 'Wrong radius'
     assert catg in [None, 'FAI3', 'FAI3-A', 'FAI3-B', 'FAI3-C', 'FAI3-T', 'FAI125', 'FAI1', 'FAI2', 'FAI3'], \
         'Wrong catg'
-    assert catg in [None, 'VP', 'PC', 'FT', 'PT-FT'], 'Wrong route_types'
+    assert route_types in [None, 'VP', 'PC', 'FT', 'PT-FT'], 'Wrong route_types'
     assert sort_by in [None, 'time_start', 'pilot', 'launch', 'route', 'dist', 'pts', 'pk'], 'Wrong sort_by'
     assert direction in [None, 'up', 'down'], 'Wrong sort direction'
 
@@ -90,8 +90,6 @@ def _set_params(latitude: float, longitude: float, radius: int = 5000, mode: str
 def get_flights(takeoff, freeze: int = 2, data_loc: str = 'data'):
     for page_idx, page in enumerate(_download_pages(takeoff=takeoff, freeze=freeze)):
         logging.info('Iterate over flights on page [%d].', page_idx + 1)
-        if page_idx != 0 and page_idx < 10:
-            continue
         for flight_idx, flight in enumerate(_parse_page(page=page)):
             logging.info('Extracting data for flight [%d]', flight_idx + 1)
             _extract_flight_data(flight_row=flight, data_loc=data_loc)

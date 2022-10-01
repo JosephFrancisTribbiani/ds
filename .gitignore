@@ -1,4 +1,6 @@
 *.ipynb_checkpoints
-Thermals_finder/parse_xcontest/data/
-venv/
 __pycache__/
+.idea/
+venv/
+
+Thermals_finder/parse_xcontest/data/
