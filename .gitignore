@@ -2,3 +2,4 @@
 Thermals_finder/parse_xcontest/data/
 venv/
 __pycache__/
+.idea/
