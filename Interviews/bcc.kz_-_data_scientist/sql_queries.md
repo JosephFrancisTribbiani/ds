@@ -62,35 +62,35 @@ CREATE OR REPLACE VIEW last_3_month_view  AS
 	
 --месяц с максимальным количеством заказов за последний год
 CREATE OR REPLACE VIEW best_month_view AS
-	SELECT DISTINCT ON (subquery_1.customer_id) subquery_1.customer_id, subquery_1.best_month FROM (
+	SELECT DISTINCT ON (subquery.customer_id) subquery.customer_id, subquery.best_month FROM (
 		SELECT customer_id, EXTRACT('month' FROM order_date) AS best_month, count(*) as qty FROM orders
 		WHERE order_date >= date_trunc('year', now())
 		GROUP BY customer_id, best_month
-		) AS subquery_1
-	ORDER BY subquery_1.customer_id ASC, subquery_1.qty DESC;
+		) AS subquery
+	ORDER BY subquery.customer_id ASC, subquery.qty DESC;
 
 -- самый популярный заказываемый продукт за последний месяц
 CREATE OR REPLACE VIEW best_product_view AS
-	SELECT DISTINCT ON (subquery_1.customer_id) subquery_1.customer_id, subquery_1.qty AS best_product FROM (
+	SELECT DISTINCT ON (subquery.customer_id) subquery.customer_id, subquery.qty AS best_product FROM (
 		SELECT orders.customer_id, order_items.product_id, SUM(order_items.quantity) AS qty FROM orders
 		JOIN order_items
 		ON orders.order_id = order_items.order_id
 		WHERE orders.order_date >= date_trunc('month', now())
 		GROUP BY orders.customer_id, order_items.product_id
-		) AS subquery_1
-	ORDER BY subquery_1.customer_id ASC, subquery_1.qty DESC;
+		) AS subquery
+	ORDER BY subquery.customer_id ASC, subquery.qty DESC;
 
 -- кол-во заказов, где стоимость заказа превышает среднюю стоимость всех его заказов за последний год
 CREATE OR REPLACE VIEW more_avg_qty_view AS
-	SELECT subquery_1.customer_id, COUNT(*) AS more_avg_qty FROM (
+	SELECT subquery.customer_id, COUNT(*) AS more_avg_qty FROM (
 		SELECT orders.customer_id, orders.order_id, (order_items.unit_price * order_items.quantity) AS order_price, 
 		CAST(AVG(order_items.unit_price * order_items.quantity) OVER(PARTITION BY orders.customer_id) AS decimal(6, 2)) AS avg_price FROM orders
 		JOIN order_items
 		ON orders.order_id = order_items.order_id
 		WHERE orders.order_date >= date_trunc('year', now())
-		) AS subquery_1
-	WHERE subquery_1.order_price > subquery_1.avg_price
-	GROUP BY subquery_1.customer_id;
+		) AS subquery
+	WHERE subquery.order_price > subquery.avg_price
+	GROUP BY subquery.customer_id;
 
 
 --объединим запросы
