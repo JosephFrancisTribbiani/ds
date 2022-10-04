@@ -52,7 +52,7 @@ subquery_2.last_3_month, subquery_4.best_month, subquery_6.best_product, subquer
 
 LEFT JOIN (
 	-- количество заказов за последние 30 дней
-	SELECT customer_id, count(customer_id) as last_30_days FROM orders
+	SELECT customer_id, count(*) as last_30_days FROM orders
 	WHERE order_date >= date_trunc('day', now()) - interval '29 days'
 	GROUP BY customer_id
 	) AS subquery_1
@@ -60,7 +60,7 @@ ON customers.customer_id = subquery_1.customer_id
 
 LEFT JOIN (
 	-- количество заказов за последние 3 месяца
-	SELECT customer_id, count(customer_id) as last_3_month FROM orders
+	SELECT customer_id, count(*) as last_3_month FROM orders
 	WHERE order_date >= date_trunc('month', now()) - interval '2 month'
 	GROUP BY customer_id
 	) as subquery_2
@@ -69,7 +69,7 @@ ON customers.customer_id = subquery_2.customer_id
 LEFT JOIN (
 	--месяц с максимальным количеством заказов за последний год
 	SELECT DISTINCT ON (subquery_3.customer_id) subquery_3.customer_id, subquery_3.best_month FROM (
-		SELECT customer_id, EXTRACT('month' FROM order_date) AS best_month, count(DISTINCT order_id) as qty FROM orders
+		SELECT customer_id, EXTRACT('month' FROM order_date) AS best_month, count(*) as qty FROM orders
 		WHERE order_date >= date_trunc('year', now())
 		GROUP BY customer_id, best_month
 		) AS subquery_3
