@@ -6,3 +6,4 @@
 3. variables
 4. user_input
 5. data_types
+6. operators
