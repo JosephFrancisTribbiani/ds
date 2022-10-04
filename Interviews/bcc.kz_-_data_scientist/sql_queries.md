@@ -1,5 +1,27 @@
 ### Задача 1
 
+Напишите запрос, который выведет в разрезе стран информацию о кол-ве сотрудников, которые работают на данный момент в компании, и минимальная зарплата должности которых превышает $2000
+
+```SQL
+SELECT subquery_3.country_name, count(subquery_3.country_name) AS qty FROM (
+	SELECT * FROM (
+		SELECT departments.department_id, countries.country_name FROM countries
+		JOIN locations ON countries.country_id = locations.country_id
+		JOIN departments ON locations.location_id = departments.location_id
+		) AS subquery_1
+	JOIN (
+		SELECT DISTINCT employees.employee_id, employees.department_id FROM employees
+		JOIN jobs
+		ON employees.job_id = jobs.job_id
+		WHERE employees.employee_id NOT IN (SELECT job_history.employee_id FROM job_history)
+		AND jobs.min_salary > 2000
+		) AS subquery_2
+	ON subquery_1.department_id = subquery_2.department_id
+	) AS subquery_3
+GROUP BY subquery_3.country_name
+ORDER BY qty DESC
+```
+
 
 ### Задача 2
 
