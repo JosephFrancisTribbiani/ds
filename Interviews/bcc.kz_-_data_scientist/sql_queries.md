@@ -106,7 +106,12 @@ CREATE OR REPLACE VIEW more_avg_qty_view AS
 
 
 --объединим запросы
-SELECT DISTINCT customers.customer_id, customers.cust_first_name, customers.cust_last_name, employees_info_view.first_name AS empl_first_name, employees_info_view.last_name AS empl_last_name, employees_info_view.job_title, employees_info_view.department_name, employees_info_view.region_name, employees_info_view.country_name, employees_info_view.manager_first_name, employees_info_view.manager_last_name, last_30_days_view.last_30_days, last_3_month_view.last_3_month, best_month_view.best_month, best_product_view.best_product, more_avg_qty_view.more_avg_qty FROM customers
+SELECT DISTINCT customers.customer_id, customers.cust_first_name, customers.cust_last_name, 
+	employees_info_view.first_name AS empl_first_name, employees_info_view.last_name AS empl_last_name, 
+	employees_info_view.job_title, employees_info_view.department_name, employees_info_view.region_name, 
+	employees_info_view.country_name, employees_info_view.manager_first_name, employees_info_view.manager_last_name, 
+	last_30_days_view.last_30_days, last_3_month_view.last_3_month, best_month_view.best_month, best_product_view.best_product, 
+	more_avg_qty_view.more_avg_qty FROM customers
 
 LEFT JOIN employees_info_view ON customers.account_mgr_id = employees_info_view.employee_id
 LEFT JOIN last_30_days_view ON customers.customer_id = last_30_days_view.customer_id
