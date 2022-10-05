@@ -44,10 +44,22 @@ LIMIT 10
 
 ### Задача 3
 
-Напишите запрос, который выведет информацию в разрезе заказчиков: Имя, Фамилия, **Имя и Фамилия менеджера**, **Должность**, **Департамент**, **Регион**, **Страна**, **Имя и Фамилия менеджера сотрудника**, кол-во совершенных заказов за последние 30 дней, кол-во совершенных заказов за последний 3 месяца, месяц с максимальным кол-вом заказов за последний год, самый популярный заказываемый продукт за последний месяц, кол-во заказов, где стоимость заказа превышает среднюю стоимость всех его заказов за последний год.
+Напишите запрос, который выведет информацию в разрезе заказчиков: Имя, Фамилия, Имя и Фамилия менеджера, Должность, Департамент, Регион, Страна, Имя и Фамилия менеджера сотрудника, кол-во совершенных заказов за последние 30 дней, кол-во совершенных заказов за последний 3 месяца, месяц с максимальным кол-вом заказов за последний год, самый популярный заказываемый продукт за последний месяц, кол-во заказов, где стоимость заказа превышает среднюю стоимость всех его заказов за последний год.
 
 ```SQL
 -- создадим views для большей читаемости текста запроса
+-- выведение информации по менеджерам компании
+CREATE OR REPLACE VIEW employees_info_view AS
+	SELECT employees.employee_id, employees.first_name, employees.last_name, jobs.job_title, 
+		departments.department_name, countries.country_name, regions.region_name,
+		managers.first_name AS manager_first_name, managers.last_name AS manager_last_name FROM employees
+	LEFT JOIN jobs ON employees.job_id = jobs.job_id
+	LEFT JOIN departments ON employees.department_id = departments.department_id
+	LEFT JOIN locations ON departments.location_id = locations.location_id
+	LEFT JOIN countries ON locations.country_id = countries.country_id
+	LEFT JOIN regions ON countries.region_id = regions.region_id
+	LEFT JOIN employees AS managers ON employees.manager_id = managers.employee_id;
+
 -- количество заказов за последние 30 дней
 CREATE OR REPLACE VIEW last_30_days_view AS
 	SELECT customer_id, count(*) as last_30_days FROM orders
@@ -71,7 +83,7 @@ CREATE OR REPLACE VIEW best_month_view AS
 
 -- самый популярный заказываемый продукт за последний месяц
 CREATE OR REPLACE VIEW best_product_view AS
-	SELECT DISTINCT ON (subquery.customer_id) subquery.customer_id, subquery.qty AS best_product FROM (
+	SELECT DISTINCT ON (subquery.customer_id) subquery.customer_id, subquery.product_id AS best_product FROM (
 		SELECT orders.customer_id, order_items.product_id, SUM(order_items.quantity) AS qty FROM orders
 		JOIN order_items
 		ON orders.order_id = order_items.order_id
@@ -94,23 +106,14 @@ CREATE OR REPLACE VIEW more_avg_qty_view AS
 
 
 --объединим запросы
-SELECT DISTINCT customers.cust_first_name, customers.cust_last_name, customers.customer_id, last_30_days_view.last_30_days, 
-last_3_month_view.last_3_month, best_month_view.best_month, best_product_view.best_product, more_avg_qty_view.more_avg_qty FROM customers
+SELECT DISTINCT customers.customer_id, customers.cust_first_name, customers.cust_last_name, employees_info_view.first_name AS empl_first_name, employees_info_view.last_name AS empl_last_name, employees_info_view.job_title, employees_info_view.department_name, employees_info_view.region_name, employees_info_view.country_name, employees_info_view.manager_first_name, employees_info_view.manager_last_name, last_30_days_view.last_30_days, last_3_month_view.last_3_month, best_month_view.best_month, best_product_view.best_product, more_avg_qty_view.more_avg_qty FROM customers
 
-LEFT JOIN last_30_days_view
-ON customers.customer_id = last_30_days_view.customer_id
-
-LEFT JOIN last_3_month_view
-ON customers.customer_id = last_3_month_view.customer_id
-
-LEFT JOIN best_month_view
-ON customers.customer_id = best_month_view.customer_id
-
-LEFT JOIN best_product_view
-ON customers.customer_id = best_product_view.customer_id
-
-LEFT JOIN more_avg_qty_view
-ON customers.customer_id = more_avg_qty_view.customer_id
+LEFT JOIN employees_info_view ON customers.account_mgr_id = employees_info_view.employee_id
+LEFT JOIN last_30_days_view ON customers.customer_id = last_30_days_view.customer_id
+LEFT JOIN last_3_month_view ON customers.customer_id = last_3_month_view.customer_id
+LEFT JOIN best_month_view ON customers.customer_id = best_month_view.customer_id
+LEFT JOIN best_product_view ON customers.customer_id = best_product_view.customer_id
+LEFT JOIN more_avg_qty_view ON customers.customer_id = more_avg_qty_view.customer_id
 	
 ORDER BY customers.customer_id ASC
 ```
