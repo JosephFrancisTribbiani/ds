@@ -8,3 +8,5 @@
 5. [data_types](./5_data_types.cpp)
 6. [operators](./6_operators.cpp)
 7. [strings](./7_strings.cpp)
+8. [math](./8_math.cpp)
+9. [conditions](./9_conditions.cpp)
