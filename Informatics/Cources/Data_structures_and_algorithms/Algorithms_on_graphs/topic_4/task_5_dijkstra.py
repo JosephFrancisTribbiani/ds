@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 # считываем исходные данные из файла
-input_file_path = Path(__file__).parent.resolve() / 'input.txt'
+input_file_path = Path(__file__).parent.resolve() / 'task_5_input.txt'
 with open(input_file_path, 'r') as file:
     n, start_vertex, finish_vertex = list(map(int, file.readline().split()))
     start_vertex, finish_vertex = start_vertex - 1, finish_vertex - 1
