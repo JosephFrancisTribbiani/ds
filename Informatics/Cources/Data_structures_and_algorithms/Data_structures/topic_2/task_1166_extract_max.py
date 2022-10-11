@@ -30,28 +30,40 @@ class Heap:
             node = self.shift_up(node=parent)
         return node
 
-    def increment(self, idx: int, val: Union[int, float]) -> int:
-        """
-        Метод увеличивает значение элемента кучи с индексом idx на значение val и восстанавливает кучу
-        """
-        self.heap[idx] += val
-        node = self.shift_up(node=idx)
+    def shift_down(self, node: int) -> int:
+        # находим детей элемента
+        l_child = node*2 + 1
+        r_child = node*2 + 2
+
+        if r_child < len(self.heap) and self.heap[r_child] > max(self.heap[l_child], self.heap[node]):
+            self.heap[r_child], self.heap[node] = self.heap[node], self.heap[r_child]
+            node = self.shift_down(node=r_child)
+        elif l_child < len(self.heap) and self.heap[l_child] > self.heap[node]:
+            self.heap[l_child], self.heap[node] = self.heap[node], self.heap[l_child]
+            node = self.shift_down(node=l_child)
         return node
+
+    def extract_max(self) -> int:
+        # меняем местами root и последнй элемент кучи
+        self.heap[-1], self.heap[0] = self.heap[0], self.heap[-1]
+
+        # достаем последний элемент кучи
+        val = self.heap.pop()
+
+        # просейваем root вниз
+        node = self.shift_down(node=0)
+        return node, val
 
 
 if __name__ == "__main__":
     # считываем входные данные из фйла
-    input_data_path = Path(__file__).parent.resolve() / 'task_1164_input.txt'
+    input_data_path = Path(__file__).parent.resolve() / 'task_1165_input.txt'
     with open(input_data_path, 'r') as file:
         # количество элементов в куче
         n = int(file.readline())
 
         # элементы кучи
         nums = list(map(int, file.readline().split()))
-
-        # выполняем операции increment
-        n_requests = int(file.readline())
-        requests = [tuple(map(int, file.readline().split())) for _ in range(n_requests)]
 
     # # считываем данные через терминал (для informatics)
     # # количество элементов в куче
@@ -60,15 +72,9 @@ if __name__ == "__main__":
     # # элементы кучи
     # nums = list(map(int, input().split()))
 
-    # # выполняем операции increment
-    # n_requests = int(input())
-    # requests = [tuple(map(int, input().split())) for _ in range(n_requests)]
-
     # инициализируем кучу
     heap = Heap(nums=nums)    
 
-    for idx, val in requests:
-        node = heap.increment(idx=idx - 1, val=val)
-        print(node + 1)
-
-    print(*heap.heap)
+    for _ in range(n - 1):
+        node, val = heap.extract_max()
+        print(node + 1, val)

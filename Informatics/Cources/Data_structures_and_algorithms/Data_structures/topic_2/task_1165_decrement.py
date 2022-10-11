@@ -1,4 +1,3 @@
-from re import L
 from typing import Union
 from pathlib import Path
 
@@ -20,7 +19,7 @@ class Heap:
         self.shift_up(node=len(self.heap) - 1)
         return
 
-    def shift_up(self, node: int) -> None:
+    def shift_up(self, node: int) -> int:
         # находим родителя элемента
         parent = (node - 1) // 2
 
@@ -31,7 +30,7 @@ class Heap:
             node = self.shift_up(node=parent)
         return node
 
-    def shift_down(self, node: int) -> None:
+    def shift_down(self, node: int) -> int:
         # находим детей элемента
         l_child = node*2 + 1
         r_child = node*2 + 2
@@ -44,7 +43,7 @@ class Heap:
             node = self.shift_down(node=l_child)
         return node
 
-    def increment(self, idx: int, val: Union[int, float]) -> None:
+    def increment(self, idx: int, val: Union[int, float]) -> int:
         """
         Метод увеличивает значение элемента кучи с индексом idx на значение val и восстанавливает кучу
         """
@@ -52,7 +51,7 @@ class Heap:
         node = self.shift_up(node=idx)
         return node
 
-    def decrement(self, idx: int, val: Union[int, float]) -> None:
+    def decrement(self, idx: int, val: Union[int, float]) -> int:
         """
         Метод уменьшает значение элемента кучи с индексом idx на значение val и восстанавливает кучу
         """
@@ -68,7 +67,7 @@ if __name__ == "__main__":
         # количество элементов в куче
         n = int(file.readline())
 
-        # инициализируем кучу
+        # элементы кучи
         nums = list(map(int, file.readline().split()))
 
         # выполняем операции increment
