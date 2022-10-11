@@ -1,29 +1,29 @@
 from pathlib import Path
 
 
-# # считываем данные из файла и задаём граф в виде матрицы смежности
-# input_file_path = Path(__file__).parent.resolve() / 'task_7_input_1.txt'
-# with open(input_file_path, 'r') as file:
-#     n = int(file.readline())  # количество городов
-#     prices = list(map(int, file.readline().split()))  # стоимость бензина в каждом городе
-#     graph = [[0 if i == j else -1 for j in range(n)] for i in range(n)]
-#     m = int(file.readline())  # количество дорог в стране
-#     for _ in range(m):
-#         city_from, city_to = list(map(int, file.readline().split()))
-#         city_from, city_to = city_from - 1, city_to - 1
-#         graph[city_from][city_to] = prices[city_from]
-#         graph[city_to][city_from] = prices[city_to]
+# считываем данные из файла и задаём граф в виде матрицы смежности
+input_file_path = Path(__file__).parent.resolve() / 'task_7_input_1.txt'
+with open(input_file_path, 'r') as file:
+    n = int(file.readline())  # количество городов
+    prices = list(map(int, file.readline().split()))  # стоимость бензина в каждом городе
+    graph = [[0 if i == j else -1 for j in range(n)] for i in range(n)]
+    m = int(file.readline())  # количество дорог в стране
+    for _ in range(m):
+        city_from, city_to = list(map(int, file.readline().split()))
+        city_from, city_to = city_from - 1, city_to - 1
+        graph[city_from][city_to] = prices[city_from]
+        graph[city_to][city_from] = prices[city_to]
 
-# считываем данные через терминал (для informatics) и задаём граф в виде матрицы смежности
-n = int(input())  # количество городов
-prices = list(map(int, input().split()))  # стоимость бензина в каждом городе
-graph = [[0 if i == j else -1 for j in range(n)] for i in range(n)]
-m = int(input())  # количество дорог в стране
-for _ in range(m):
-    city_from, city_to = list(map(int, input().split()))
-    city_from, city_to = city_from - 1, city_to - 1
-    graph[city_from][city_to] = prices[city_from]
-    graph[city_to][city_from] = prices[city_to]
+# # считываем данные через терминал (для informatics) и задаём граф в виде матрицы смежности
+# n = int(input())  # количество городов
+# prices = list(map(int, input().split()))  # стоимость бензина в каждом городе
+# graph = [[0 if i == j else -1 for j in range(n)] for i in range(n)]
+# m = int(input())  # количество дорог в стране
+# for _ in range(m):
+#     city_from, city_to = list(map(int, input().split()))
+#     city_from, city_to = city_from - 1, city_to - 1
+#     graph[city_from][city_to] = prices[city_from]
+#     graph[city_to][city_from] = prices[city_to]
 
 # решаем задачу нахождения оптимального пути с помощтю наивного алгоритма Дейкстры
 
