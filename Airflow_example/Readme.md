@@ -8,8 +8,7 @@ docker build -t airflow-basic .
 Наш созданный образ будет называться **airflow-basic**
 - Запуск Docker контейнера
 ```bash
-docker run --rm --mount src="C:\Users\alpex\HSE_study\Git\ds\Airflow_example\dags",dst="//usr/local/airflow/dags",type=bind -d -p 8080:8080
- airflow-basic
+docker run --rm --mount src="C:\Users\alpex\HSE_study\Git\ds\Airflow_example\dags",dst="//usr/local/airflow/dags",type=bind -d -p 8080:8080 airflow-basic
 ```
 ```--rm``` означает, что как только контейнер будет остановлен, он будет автоматически удален
 ```--mount``` означает, что мы привязываем папку в контейнере к папке на локальном компьютере и все изменения в одной из этих папок автоматически будут отображены в другой
