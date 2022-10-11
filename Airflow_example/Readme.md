@@ -1,4 +1,4 @@
-Airflow развернут в Docker контейнере по <a href="https://medium.com/@technologIT/apache-airflow-%D1%87%D0%B0%D1%81%D1%82%D1%8C-4-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-9fa5cb9d0e06">инструкции</a>
+Airflow развернут в Docker контейнере по <a href="https://medium.com/@technologIT/apache-airflow-%D1%87%D0%B0%D1%81%D1%82%D1%8C-4-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-9fa5cb9d0e06">инструкции</a> (с учетом установки обновленной версии airflow 2.4.1)
 
 Для запуска контейнера необходимо выполнить последовательно следующие команды:
 - Создание образа с помощью Docker файла

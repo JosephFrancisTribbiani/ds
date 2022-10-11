@@ -1,48 +1,44 @@
 # Base Image
-FROM python:3.8-slim
+FROM python:3.9.5-slim-buster
 LABEL maintainer="andrey.makarovskii@yandex.ru"
 
 # Arguments that can be set with docker build
-ARG AIRFLOW_VERSION=1.10.12
+ARG AIRFLOW_VERSION=2.4.1
 ARG AIRFLOW_HOME=/usr/local/airflow
 
 # Export the environment variable AIRFLOW_HOME where airflow will be installed
 ENV AIRFLOW_HOME=${AIRFLOW_HOME}
 
 # Install dependencies and tools
-RUN apt-get update -yqq && \
-    apt-get upgrade -yqq && \
-    apt-get install -yqq --no-install-recommends \
-    wget \
-    libczmq-dev \
-    curl \
-    libssl-dev \
-    git \
-    inetutils-telnet \
-    bind9utils freetds-dev \
-    libkrb5-dev \
-    libsasl2-dev \
-    libffi-dev libpq-dev \
-    freetds-bin build-essential \
-    default-libmysqlclient-dev \
-    apt-utils \
-    rsync \
-    zip \
-    unzip \
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+    freetds-bin \
+    krb5-user \
+    ldap-utils \
+    libffi6 \
+    libsasl2-2 \
+    libsasl2-modules \
+    libssl1.1 \
+    locales  \
+    lsb-release \
+    sasl2-bin \
+    sqlite3 \
+    unixodbc \
+    python-dev \
+    libpq-dev \
     gcc \
     vim \
-    locales \
     && apt-get clean
 
-COPY ./requirements-python3.8.txt /requirements-python3.8.txt
+COPY ./requirements-python3.9.txt /requirements-python3.9.txt
 
 # Upgrade pip
 # Create airflow user
 # Install apache airflow with subpackages
 RUN pip install --upgrade pip && \
     useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow && \
-    pip install apache-airflow[crypto,celery,postgres,kubernetes,docker]==${AIRFLOW_VERSION} --constraint /requirements-python3.8.txt
-
+    pip install apache-airflow[crypto,celery,postgres,kubernetes,docker]==${AIRFLOW_VERSION} --constraint /requirements-python3.9.txt
 
 # Copy the entrypoint.sh from host to container (at path AIRFLOW_HOME)
 COPY ./entrypoint.sh ./entrypoint.sh
