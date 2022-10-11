@@ -57,7 +57,7 @@ class Heap:
 
 if __name__ == "__main__":
     # считываем входные данные из фйла
-    input_data_path = Path(__file__).parent.resolve() / 'task_1165_input.txt'
+    input_data_path = Path(__file__).parent.resolve() / 'task_1166_input.txt'
     with open(input_data_path, 'r') as file:
         # количество элементов в куче
         n = int(file.readline())
