@@ -13,3 +13,6 @@
 10. [switch](./10_switch.cpp)
 11. [loops](./11_loops.cpp)
 12. [arrays](./12_arrays.cpp)
+13. [structures](./13_structures.cpp)
+14. [references](./14_references.cpp)
+15. [pointers](./15_pointers.cpp)
