@@ -6,10 +6,10 @@ LOCAL_FILE = True
 
 
 class Heap:
-    def __init__(self, nums: list) -> None:
+    def __init__(self, nums: list = []) -> None:
         # инициализируем кучу
         self.heap = list()
-
+        
         # на вход принимаем массив, из которого неоходимо сформировать бинарную кучу
         for num in nums:
             self.add_elem(elem=num)
@@ -19,8 +19,8 @@ class Heap:
         self.heap.append(elem)
         
         # выполняем операцию всплытия элемента
-        self.shift_up(node=len(self.heap) - 1)
-        return
+        node = self.shift_up(node=len(self.heap) - 1)
+        return node
 
     def shift_up(self, node: int) -> int:
         # находим родителя элемента
@@ -47,39 +47,61 @@ class Heap:
         return node
 
     def extract_max(self) -> int:
-        # меняем местами root и последнй элемент кучи
-        self.heap[-1], self.heap[0] = self.heap[0], self.heap[-1]
+        if self.heap:
+            # меняем местами root и последнй элемент кучи
+            self.heap[-1], self.heap[0] = self.heap[0], self.heap[-1]
 
-        # достаем последний элемент кучи
-        val = self.heap.pop()
+            # достаем последний элемент кучи
+            val = self.heap.pop()
 
-        # просейваем root вниз
-        node = self.shift_down(node=0)
-        return node, val
+            # просейваем root вниз
+            node = self.shift_down(node=0)
+
+            return node, val
 
 
 if __name__ == "__main__":
-    
+
     if LOCAL_FILE:
         # считываем входные данные из файла
-        input_data_path = Path(__file__).parent.resolve() / 'task_1166_input.txt'
+        input_data_path = Path(__file__).parent.resolve() / 'task_1167_input.txt'
         with open(input_data_path, 'r') as file:
             # количество элементов в куче
-            n = int(file.readline())
+            n, m = list(map(int, file.readline().split()))
 
-            # элементы кучи
-            nums = list(map(int, file.readline().split()))
+            # считываем запросы
+            requests = list()
+            for _ in range(m):
+                requests.append(list(map(int, file.readline().split())))
     else:
         # считываем данные через терминал (для informatics)
         # количество элементов в куче
-        n = int(input())
+        n, m = list(map(int, input().split()))
 
-        # элементы кучи
-        nums = list(map(int, input().split()))
+        # считываем запросы
+        requests = list()
+        for _ in range(m):
+            requests.append(list(map(int, input().split())))
 
-    # инициализируем кучу
-    heap = Heap(nums=nums)    
 
-    for _ in range(n - 1):
-        node, val = heap.extract_max()
-        print(node + 1, val)
+    heap = Heap()
+    node = heap.extract_max()
+
+    for r in requests:
+        if r[0] == 1:
+            resp = heap.extract_max()
+            if not resp:
+                print(-1)
+            elif heap.heap:
+                node, val = resp
+                print(node + 1, val)
+            else:
+                _, val = resp
+                print(0, val)               
+        else:
+            if len(heap.heap) < n:
+                node = heap.add_elem(elem=r[1])
+                print(node + 1)
+            else:
+                print(-1)
+    print(*heap.heap)
