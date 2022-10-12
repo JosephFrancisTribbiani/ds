@@ -16,3 +16,10 @@
 13. [structures](./13_structures.cpp)
 14. [references](./14_references.cpp)
 15. [pointers](./15_pointers.cpp)
+
+### Functions
+
+16. [functions](./16_functions.cpp)
+17. [function_parameters](./17_function_parameters.cpp)
+18. [function_overloading](./18_function_overloading.cpp)
+19. [recursion](./19_recursion.cpp)
