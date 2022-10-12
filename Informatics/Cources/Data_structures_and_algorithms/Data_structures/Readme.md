@@ -37,9 +37,7 @@
 
 Ограничение времени – 2 секунды
 
-[Решение python](./topic_2/task_1168_priority_queue_with_removal.py)
-
-_Пройдены не все тесты!_
+[Решение python](./topic_2/task_1168_priority_queue_with_removal.py) _Пройдены не все тесты!_
 
 ### [Задача №1169. Построение кучи просеиванием вверх](https://informatics.msk.ru/mod/statements/view.php?id=1234&chapterid=1169#1)
 См. <a href="https://informatics.msk.ru/mod/resource/view.php?id=1230">«Двоичная куча (пирамида). Пирамидальная сортировка. Приоритетная очередь» (PDF)</a>, стр. 13, задача 6.
@@ -54,5 +52,3 @@ _Пройдены не все тесты!_
 Ограничение времени – 1 секунда
 
 [Решение python](./topic_2/task_1170_build_heap_shift_down.py)
-
-_Пройдены не все тесты!_
