@@ -23,3 +23,13 @@
 См. <a href="https://informatics.msk.ru/mod/resource/view.php?id=1230">«Двоичная куча (пирамида). Пирамидальная сортировка. Приоритетная очередь» (PDF)</a>, стр. 11, задача 4.
 
 Ограничение времени – 2 секунды
+
+### [Задача №1168. Приоритетная очередь с удалением](https://informatics.msk.ru/mod/statements/view.php?id=1234&chapterid=1168#1)
+См. <a href="https://informatics.msk.ru/mod/resource/view.php?id=1230">«Двоичная куча (пирамида). Пирамидальная сортировка. Приоритетная очередь» (PDF)</a>, стр. 12, задача 5.
+
+Ограничение времени – 2 секунды
+
+### [Задача №1169. Построение кучи просеиванием вверх](https://informatics.msk.ru/mod/statements/view.php?id=1234&chapterid=1169#1)
+См. <a href="https://informatics.msk.ru/mod/resource/view.php?id=1230">«Двоичная куча (пирамида). Пирамидальная сортировка. Приоритетная очередь» (PDF)</a>, стр. 13, задача 6.
+
+Ограничение времени – 1 секунда
