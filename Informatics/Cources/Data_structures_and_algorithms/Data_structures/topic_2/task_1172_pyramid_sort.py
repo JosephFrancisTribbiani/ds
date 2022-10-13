@@ -1,5 +1,4 @@
 from pathlib import Path
-from collections import deque
 
 
 LOCAL_FILE = False
@@ -21,32 +20,34 @@ class Heap:
         for v in range(first_leaf, 0, -1):
             self.shift_down(node=v - 1)
 
-    def shift_down(self, node: int) -> int:
+    def shift_down(self, node: int, stop: int = None) -> int:
+        if stop is None:
+            stop = self.heap_size
+
         # находим детей элемента
         l_child = node*2 + 1
         r_child = node*2 + 2
 
-        if r_child < self.heap_size and self.heap[r_child] > max(self.heap[l_child], self.heap[node]):
+        if r_child < stop and self.heap[r_child] > max(self.heap[l_child], self.heap[node]):
             self.heap[r_child], self.heap[node] = self.heap[node], self.heap[r_child]
-            node = self.shift_down(node=r_child)
-        elif l_child < self.heap_size and self.heap[l_child] > self.heap[node]:
+            node = self.shift_down(node=r_child, stop=stop)
+        elif l_child < stop and self.heap[l_child] > self.heap[node]:
             self.heap[l_child], self.heap[node] = self.heap[node], self.heap[l_child]
-            node = self.shift_down(node=l_child)
+            node = self.shift_down(node=l_child, stop=stop)
         return node
 
-    def extract_max(self) -> int:
-        if self.heap:
-            # меняем местами root и последнй элемент кучи
-            self.heap[-1], self.heap[0] = self.heap[0], self.heap[-1]
+    def pyramid_sort(self, verbose: bool = False) -> None:
+        for stop in range(self.heap_size, 0, -1):
+            if verbose:
+                print(*self.heap[:stop])
+            stop -= 1
 
-            # достаем последний элемент кучи
-            val = self.heap.pop()
-            self.heap_size -= 1
+            # меняем местами root и последнй элемент неотсортированной части кучи
+            self.heap[stop], self.heap[0] = self.heap[0], self.heap[stop]
 
-            # просейваем root вниз
-            node = self.shift_down(node=0)
-
-            return node, val
+            # выполняем операцию просеивания вниз до последнего элемента, который мы только что поменяли
+            self.shift_down(node=0, stop=stop)
+        return
 
 
 if __name__ == "__main__":
@@ -70,11 +71,5 @@ if __name__ == "__main__":
 
     # инициализируем кучу
     heap = Heap(nums=nums)
-
-    # достаем максимальный элемент и добавляем в отсортированный массив
-    sorted_array = deque()
-    for _ in range(n):
-        _, val = heap.extract_max()
-        sorted_array.appendleft(val)
-    
-    print(*sorted_array)
+    heap.pyramid_sort(verbose=False)
+    print(*heap.heap)
