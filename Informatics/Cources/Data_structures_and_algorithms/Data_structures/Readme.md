@@ -63,3 +63,10 @@
 Ограничение времени – 1 секунда
 
 [Решение python](./topic_2/task_1171_detailed_pyramid_sort.py)
+
+### [Задача №1172. Просто сортировка](https://informatics.msk.ru/mod/statements/view.php?id=1234&chapterid=1172#1)
+См. <a href="https://informatics.msk.ru/mod/resource/view.php?id=1230">«Двоичная куча (пирамида). Пирамидальная сортировка. Приоритетная очередь» (PDF)</a>, стр. 14, задача 9.
+
+Ограничение времени – 1 секунда
+
+[Решение python](./topic_2/task_1172_pyramid_sort.py)
