@@ -1,4 +1,5 @@
 from pathlib import Path
+from collections import deque
 
 
 LOCAL_FILE = False
@@ -20,7 +21,6 @@ class Heap:
         for v in range(first_leaf, 0, -1):
             self.shift_down(node=v - 1)
 
-
     def shift_down(self, node: int) -> int:
         # находим детей элемента
         l_child = node*2 + 1
@@ -34,12 +34,26 @@ class Heap:
             node = self.shift_down(node=l_child)
         return node
 
+    def extract_max(self) -> int:
+        if self.heap:
+            # меняем местами root и последнй элемент кучи
+            self.heap[-1], self.heap[0] = self.heap[0], self.heap[-1]
+
+            # достаем последний элемент кучи
+            val = self.heap.pop()
+            self.heap_size -= 1
+
+            # просейваем root вниз
+            node = self.shift_down(node=0)
+
+            return node, val
+
 
 if __name__ == "__main__":
 
     if LOCAL_FILE:
         # считываем входные данные из файла
-        input_data_path = Path(__file__).parent.resolve() / 'task_1170_input.txt'
+        input_data_path = Path(__file__).parent.resolve() / 'task_1171_input.txt'
         with open(input_data_path, 'r') as file:
             # количество элементов в куче
             n = int(file.readline())
@@ -54,6 +68,14 @@ if __name__ == "__main__":
         # массив значений
         nums = list(map(int, input().split()))
 
-
+    # инициализируем кучу
     heap = Heap(nums=nums)
-    print(*heap.heap)
+
+    # достаем максимальный элемент и добавляем в отсортированный массив
+    sorted_array = deque()
+    for _ in range(n):
+        print(*heap.heap)
+        _, val = heap.extract_max()
+        sorted_array.appendleft(val)
+    
+    print(*sorted_array)
