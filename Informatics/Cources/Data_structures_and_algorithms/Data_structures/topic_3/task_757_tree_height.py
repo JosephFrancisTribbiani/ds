@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     if LOCAL_FILE:
         # считываем входные данные из файла
-        input_data_path = Path(__file__).parent.resolve() / 'task_757_input.txt'
+        input_data_path = Path(__file__).parent.resolve() / 'topic_3_input.txt'
         with open(input_data_path, 'r') as file:
             # массив значений
             nums = list(map(int, file.readline().split()))
