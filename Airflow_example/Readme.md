@@ -36,7 +36,7 @@ CONTAINER ID   IMAGE           COMMAND            CREATED          STATUS       
 
 ### Возникшие проблемы при разворачивании контейнера и их решение
 
-#### 1. Docker не мог "достучаться" до БД Postgres на localhost
+#### Docker не мог "достучаться" до БД Postgres на localhost
 
 Узнать IP local хоста на Windows можно с помощью команды ipconfig в PowerShell. Получим такой вывод:
 
