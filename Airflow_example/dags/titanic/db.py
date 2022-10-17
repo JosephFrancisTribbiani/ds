@@ -115,7 +115,7 @@ def _nan_to_null(f, _null=pe.AsIs('NULL'), _float=pe.Float):
     return _float(f)
 
 
-def get_data(table: str) -> pd.DataFrame:
+def load_data(table: str) -> pd.DataFrame:
     """
     Функция загрузки данных из базы Postgres.
     :param table: название таблицы в Postgres.
@@ -126,8 +126,7 @@ def get_data(table: str) -> pd.DataFrame:
 
     # формируем текст запроса
     query = """
-    SELECT {} FROM {}
-    LIMIT 10;
+    SELECT {} FROM {};
     """.format(", ".join(cols), table)
 
     # загружаем данные из Postgres

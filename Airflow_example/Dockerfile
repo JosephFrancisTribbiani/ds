@@ -29,6 +29,8 @@ RUN apt-get update -y && \
     libpq-dev \
     gcc \
     vim \
+    telnet \
+    iputils-ping \
     && apt-get clean
 
 COPY ./requirements-python3.9.txt /requirements-python3.9.txt

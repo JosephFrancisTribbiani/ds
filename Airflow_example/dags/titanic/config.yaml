@@ -2,5 +2,5 @@ db:
   dbname: "titanic"
   user: "postgres"
   password: 1234
-  host: "localhost"
+  host: "192.168.1.75"
   port: 5432

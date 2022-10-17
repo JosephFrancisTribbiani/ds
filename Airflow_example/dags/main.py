@@ -1,8 +1,9 @@
-from titanic.db import init_db, data_to_postgres, get_data
+from titanic.db import load_data
 
 
 def main():
-    data = get_data(table="target")
+    df = load_data(table="features")
+    print(df.shape)
     return
 
 
