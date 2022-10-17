@@ -36,7 +36,7 @@ CONTAINER ID   IMAGE           COMMAND            CREATED          STATUS       
 
 ### Возникшие проблемы при разворачивании контейнера и их решение
 
-**Docker не мог "достучаться" до БД Postgres на localhost**
+#### 1. Docker не мог "достучаться" до БД Postgres на localhost
 
 Узнать IP local хоста на Windows можно с помощью команды ipconfig в PowerShell. Получим такой вывод:
 
@@ -133,7 +133,7 @@ host        titanic         postgres         0.0.0.0/0           md5
 
 Аналогично можно поступить и с указанием адреса.
 
-**docker run выдает ошибку `bash\r: No such file or directory`**
+#### docker run выдает ошибку `bash\r: No such file or directory`
 
 В данном случае проблема связана с тем, что в данной кодировке строка в файле `entrypoint.sh` заканчивается символом окончания строки `\r`.
 В Unix системах символ окончания строки - `\n`. Для того, чтобы это поправить, необходимо открыть файл в PyCharm и в правом нижнем углу 
