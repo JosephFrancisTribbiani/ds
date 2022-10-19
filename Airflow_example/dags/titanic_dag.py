@@ -9,27 +9,32 @@ with DAG(
     start_date=days_ago(0, 0, 0, 0, 0)
 ) as dag:
 
-    def load_features():
+    def callable_load_data(table: str):
+        import logging
         from titanic.db import load_data
-        return load_data(table="features")
 
-    def load_targets():
-        from titanic.db import load_data
-        return load_data(table="target")
+        LOGGER = logging.getLogger("airflow.load_data")
+        LOGGER.info("airflow.load_data >>> airflow.prepare_sets - INFO loading data from {}".format(table))
+
+        loaded_data = load_data(table=table)
+        return
 
     def prepare_sets():
+        print("Hello")
         return
 
     task_load_features = PythonOperator(
         dag=dag,
         task_id="load_features",
-        python_callable=load_features,
+        python_callable=callable_load_data,
+        op_kwargs={"table": "features"}
     )
 
     task_load_targets = PythonOperator(
         dag=dag,
         task_id="load_targets",
-        python_callable=load_targets,
+        python_callable=callable_load_data,
+        op_kwargs={"table": "targets"}
     )
 
     task_prepare_sets = PythonOperator(
