@@ -16,6 +16,21 @@
 
 В данном разделе представлены тестовые задания, выполняемые в рамках прохождения интервью на позиции ds.
 
+### [kaggle](./kaggle/)
+
+Представлены варианты решений соревнований на [Kaggle](https://www.kaggle.com/). А именно:
+- [NBME - Score Clinical Patient Notes](./kaggle/NBME_-_Score_Clinical_Patient_Notes/) - соревнование на решение NER задачи, [ссылка](https://www.kaggle.com/competitions/nbme-score-clinical-patient-notes) на соревнование
+
+### [Pytorch_tutorials](./PyTorch_tutorials/)
+
+В данном разделе представлены полезные заметки / туториалы по работе с библиотекой PyTorch, сформированные в процессе использования этой библиотеки.
+
+### [Statistic](./Statistic/)
+
+В данном разделе представлены полезные заметки / туториалы по стаистике, а именно:
+- [distributions.ipynb](./Statistic/distributions.ipynb) - в ноутбуке собрана теория по основным распределениям, а также по использованию библиотеки `scipy`, применительно к этим распределениям
+- [stat_tests.ipynb](./Statistic/stat_tests.ipynb) - в ноутбуке представлена теория по основным статистическим тестам
+
 ### [TimeSeries forecasting](./TimeSeries_forecasting/)
 
 В данном разделе представлены решения по прогнозированию временных рядов и смежных задач. Разделы:
