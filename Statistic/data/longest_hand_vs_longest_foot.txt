@@ -1,0 +1,5 @@
+right_foot_longer left_foot_longer both_feet_same
+right_hand_longer left_hand_longer both_hand_same
+11 3 8
+2 9 14
+12 13 28
