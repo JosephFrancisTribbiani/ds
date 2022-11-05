@@ -1,0 +1,4 @@
+Ketchup	Mustard	Relish
+Male	Feemale
+15	23	10
+25	19	8
