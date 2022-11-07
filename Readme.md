@@ -20,6 +20,7 @@
 
 Представлены варианты решений соревнований на [Kaggle](https://www.kaggle.com/). А именно:
 - [NBME - Score Clinical Patient Notes](./kaggle/NBME_-_Score_Clinical_Patient_Notes/) - соревнование на решение NER задачи, [ссылка](https://www.kaggle.com/competitions/nbme-score-clinical-patient-notes) на соревнование
+- [TensorFlow - Help Protect the Great Barrier Reef](./kaggle/Kaggle_Great_Barrier_Reef/) - соревнование на решение задачи детекции морских звезд на фотографии, [ссылка](https://www.kaggle.com/c/tensorflow-great-barrier-reef/) на соревнование
 
 ### [Pytorch_tutorials](./PyTorch_tutorials/)
 
