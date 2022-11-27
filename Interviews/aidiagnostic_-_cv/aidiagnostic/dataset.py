@@ -11,7 +11,6 @@ from torch.utils.data import Dataset
 from torchvision.transforms import functional as F
 
 
-
 class AiDiagnosticDataset(Dataset):
   def __init__(self, metadata_loc: str = "./data/metadata.json", transform: bool = True, crop_size: int = 224, 
                in_channels: int = 3, loc: Tuple[float] = None, scale: Tuple[float] = None, p_3drot: float = 0.5,
