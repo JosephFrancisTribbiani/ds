@@ -73,8 +73,8 @@ if __name__ == "__main__":
                                                                "will ignore the first 2 epochs with no improvement, and will " \
                                                                "only decrease the LR after the 3rd epoch if the loss still " \
                                                                "hasn’t improved then. Default: 10")
-  parser.add_argument("--factor", type=float, default=0.05, help="Factor by which the learning rate will be reduced. " \
-                                                               "new_lr = lr * factor. Default: 0.1")
+  parser.add_argument("--factor", type=float, default=0.1, help="Factor by which the learning rate will be reduced. " \
+                                                                "new_lr = lr * factor. Default: 0.1")
   parser.add_argument("--writer-path", type=str, default="./runs/", help="Save directory location for torch tensorboard")
   parser.add_argument("--model-loc", default=None, help="Save directory location for trained model")
   parser.add_argument("--config-loc", type=str, default="./config.yaml", help="Location of the config file")
