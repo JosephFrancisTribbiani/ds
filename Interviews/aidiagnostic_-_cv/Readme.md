@@ -74,4 +74,39 @@ python aidiagnostic_go.py
 python aidiagnostic_go.py --dice --bce --writer-path "../drive/MyDrive/runs/" --model-loc "../drive/MyDrive/aidiagnostic_model.pth" --epochs 120 --patience 4 --factor 0.5
 ```
 
+Описание параметров конфигурационного файла:
+* `model`
+
+```txt
+encoder_name            имя энкодера модели, по умолчанию "resnet34"
+encoder_weights         веса предобученной модели, по умолчанию "imagenet"
+in_channels             количество каналов исходного изображения, по умолчанию 3
+classes                 количество классов, по умолчанию 1
+```
+
+* `dataloader`
+
+```txt
+batch_size              см. [torch.utils.data.DataLoader](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader), по умолчанию 64
+num_workers             см. [torch.utils.data.DataLoader](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader), по умолчанию 4
+pin_memory              см. [torch.utils.data.DataLoader](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader), по умолчанию True
+```
+
+* `dataset`
+
+```txt
+metadata_loc            путь к файлу с метадатой данных для обучения, по умолчанию "./data/metadata.json"
+transform               True если необходимо производить трансформацию исходных данных, по умолчанию True
+crop_size               размер итогового изображения после трансформаций, по умолчанию 224
+in_channels             количество каналов в итоговом изображении после трансформаций, по умолчанию 3
+loc                     лист средних значений по каждому каналу для нормализации. Если None, то средние рассчитываются по текущему 
+                        изображению, по умолчанию None
+scale                   лист значений стандартного отклонения по каждому каналу для нормализации. Если None, то стандартные отклонения 
+                        рассчитываются по текущему изображению, по умолчанию None
+p_3drot                 вероятность применения вращения 3D тензора, по умолчанию 0.5
+p_2drot                 вероятность применения вращения двумерного изображения, по умолчанию 0.5
+p_rcrop                 вероятность обрезки изображения, по умолчанию 0.9
+p_hflip                 вероятость отражения изображения относительно вертикальной оси, по умолчанию 0.5
+```
+
 ### Результаты
