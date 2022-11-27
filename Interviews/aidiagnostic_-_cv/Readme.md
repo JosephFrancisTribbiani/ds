@@ -128,6 +128,6 @@ p_hflip                 вероятость отражения изображе
 
 <img src="./images/train.JPG"></img>
 
-**Значения BCELoss и DiceLoss на тестовой выборке**
+**Значения BCELoss и DiceLoss на валидационной выборке**
 
-<img src="./images/test.JPG"></img>
+<img src="./images/eval.JPG"></img>
