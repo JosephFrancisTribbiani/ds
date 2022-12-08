@@ -7,4 +7,4 @@ catboost_info/
 Interviews/sber_reliability_-_data_scientist_nlp/tf_idf_preprocessed_data.txt
 Interviews/sber_reliability_-_data_scientist_nlp/test.csv
 Interviews/aidiagnostic_-_cv/data/subset*
-Tasks/1_seq2seq/eng-rus.txt
+Tasks/1_seq2seq/*
