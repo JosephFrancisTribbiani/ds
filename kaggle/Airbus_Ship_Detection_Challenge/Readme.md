@@ -37,7 +37,7 @@ The input data has been analysed. Below you can see the result of the analysis.
 |       13       |         75        |
 |       15       |         66        |
 
-4. I'm going to use pretrained YOLOv7 for ships detection. It based on anchor approach and consists of 9 anchors. To achieve good quality it is necessary to fine tune anchor boxes size. YOLO algorithm has option to do it, but for the initial guess it's good to use KMean approach. 
+4. I'm going to use pretrained YOLOv7 for ships detection. It based on anchor approach and consists of 9 anchors. To achieve good quality it is necessary to fine tune anchor boxes size. YOLO algorithm has option to do it, but for the initial guess it's good to use KMeans approach. 
 
 Below you can find bounding boxes width and height distribution of training data and result of clusterization. Relative means that the bounding box size has been scaled to [0, 1] depends on image size where 1 - image size.
 
