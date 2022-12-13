@@ -19,20 +19,38 @@ class YoloLoss(nn.Module):
         self.lambda_coord = 5
 
     def forward(self, prediction: torch.tensor, target: torch.tensor):
-        prediction = prediction.reshape(-1, self.s, self.s, self.b*5 + self.c)
+        """
+        :param prediciton: predictions by neural network with shape [batch size, out_features value of the last linear layer]
+        :param target: ground truth, where last dim is [x, y, w, h, confidence]
+        """
+        prediction = prediction.reshape(-1, self.s, self.s, 5*self.b + self.c)
 
         # predicts looks for each cell:
-        # [x, y, w, h, p, x, y, w, h, p, ..., probabilities for classes]
-        # x and y coordinates from top left cell corner (relative, means that values from [0, 1])
-        # h and w - height and width respectively
-        # where p - confidence, that this bounding box contains object
+        # [x, y, w, h, confidence, x, y, w, h, confidence, ..., confidences for each class]
+        # where x and y - coordinates of a bounding box middle point, where (0, 0) is top left corner of a cell
+        #                 and (1, 1) is a right bottom corner of a cell
+        #       w and h - width and height of the bounding box, where 1 equals width or height of a cell
+        #                 this values can be more than 1 (because width or height of a bounding box can be more than 
+        #                 width or height of a cell) 
+        #       confidence - confidence, that this bounding box contains an object
+        #       confidences for each class means that this detected object belongs to class (probability map) 
         # 
-        # calculates IoU for each cell
-        # you penalize only for bounding box which has biggest IoU between predicted and ground truth
-        # and object exists in cell
+        # calculates maximum IoU between anchors for each cell
         ious = torch.cat(
-            [intersection_over_union(prediction[..., i:i + 4], target[..., i:i + 4]).unsqueeze(0) \
-                for i in range(self.c + 1, self.c + self.b*5, 5)], dim=0)
-        ious_maxes, bestbox = torch.max(ious, dim=0)
+            [intersection_over_union(prediction[..., i:i + 4], target[..., i:i + 4]) \
+                for i in range(0, 5*self.b + self.c, 5)], dim=-1)
+        ious_maxes, bestbox = torch.max(ious, dim=-1, keepdim=True)
+        # where ious_maxes - ious maximum value
+        #       bestbox - anchor index with max IoU value
+
+        # the last dim of the target is ground truth [x, y, w, h, confidence, confidence for each class]
+        # where x and y - coordinates of grond truth bounding box if exists, else values are 0
+        #       w and h - width and height of ground truth bounding box if exists, else values are 0
+        #       confidence - 1 if object exists in this cell, else 0
+        #       confidence for each class is one hot vector with size number of classes, where 1 means that the
+        #                                 object belongs to the class and others are 0. If there are no objects
+        #                                 in the cell - all values of this vector are 0.
+        # binary value - object exists (value 1) or dosn't (value 0)
+        # unsqueeze is necessary to keep dim of the tensor after slice
+        object_exists = target[..., 4].unsqueeze(-1)
         return
-        

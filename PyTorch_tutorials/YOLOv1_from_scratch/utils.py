@@ -15,16 +15,16 @@ def intersection_over_union(boxes_preds: torch.tensor, boxes_labels: torch.tenso
     # y_bottom = y_center + height / 2
     #
     # prediction bounding box
-    bbox_pred_x_left   = boxes_preds[..., 0:1] - boxes_preds[..., 2:3] / 2
-    bbox_pred_x_right  = boxes_preds[..., 0:1] + boxes_preds[..., 2:3] / 2
-    bbox_pred_y_top    = boxes_preds[..., 1:2] - boxes_preds[..., 3:4] / 2
-    bbox_pred_y_bottom = boxes_preds[..., 1:2] + boxes_preds[..., 3:4] / 2
+    bbox_pred_x_left   = boxes_preds[..., 0].unsqueeze(-1) - boxes_preds[..., 2].unsqueeze(-1) / 2
+    bbox_pred_x_right  = boxes_preds[..., 0].unsqueeze(-1) + boxes_preds[..., 2].unsqueeze(-1) / 2
+    bbox_pred_y_top    = boxes_preds[..., 1].unsqueeze(-1) - boxes_preds[..., 3].unsqueeze(-1) / 2
+    bbox_pred_y_bottom = boxes_preds[..., 1].unsqueeze(-1) + boxes_preds[..., 3].unsqueeze(-1) / 2
 
     # true bounding box
-    bbox_true_x_left   = boxes_labels[..., 0:1] - boxes_labels[..., 2:3] / 2
-    bbox_true_x_right  = boxes_labels[..., 0:1] + boxes_labels[..., 2:3] / 2
-    bbox_true_y_top    = boxes_labels[..., 1:2] - boxes_labels[..., 3:4] / 2
-    bbox_true_y_bottom = boxes_labels[..., 1:2] + boxes_labels[..., 3:4] / 2
+    bbox_true_x_left   = boxes_labels[..., 0].unsqueeze(-1) - boxes_labels[..., 2].unsqueeze(-1) / 2
+    bbox_true_x_right  = boxes_labels[..., 0].unsqueeze(-1) + boxes_labels[..., 2].unsqueeze(-1) / 2
+    bbox_true_y_top    = boxes_labels[..., 1].unsqueeze(-1) - boxes_labels[..., 3].unsqueeze(-1) / 2
+    bbox_true_y_bottom = boxes_labels[..., 1].unsqueeze(-1) + boxes_labels[..., 3].unsqueeze(-1) / 2
 
     # intersection area calculation
     x_left   = torch.max(bbox_pred_x_left,   bbox_true_x_left)
