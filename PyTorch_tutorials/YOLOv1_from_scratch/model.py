@@ -85,7 +85,8 @@ class YOLOv1(nn.Module):
                         in_channels = out_channels
         return darnet
 
-    def _create_fcs(self, split_size: int, n_boxes: int, n_classes: int = 80, hidden_size: int = 4096, p: float = 0.5):
+    def _create_fcs(self, split_size: int = 7, n_boxes: int = 2, n_classes: int = 20, 
+                    hidden_size: int = 4096, p: float = 0.5):
         # split size means for how many grid cells should we split our feature map
         # the value of grid cells is s**2 (so s - n rows and n cols)
         s, b, c = split_size, n_boxes, n_classes
@@ -94,5 +95,5 @@ class YOLOv1(nn.Module):
             nn.Linear(in_features=1024*s*s, out_features=hidden_size),  # original paper is 4096
             nn.Dropout(p=p),  # in original paper is 0.5
             nn.LeakyReLU(negative_slope=0.1),
-            nn.Linear(in_features=hidden_size, out_features=s*s*(c + b*5)),
+            nn.Linear(in_features=hidden_size, out_features=s*s*(b*5 + c)),
         )
