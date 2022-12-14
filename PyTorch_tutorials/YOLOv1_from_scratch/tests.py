@@ -141,6 +141,11 @@ class TestYoloLossFunction(unittest.TestCase):
             prediction=self.prediction, target=self.target, best_box_idx=self.bestbox)
         self.assertTrue(torch.allclose(loss, torch.tensor([0.27749999999999997]), rtol=1e-6))
 
+    def test_wh_penalty(self):
+        loss = self.loss_function.wh_penalty(
+            prediction=self.prediction, target=self.target, best_box_idx=self.bestbox)
+        self.assertTrue(torch.allclose(loss, torch.tensor([2.7383959074156614]), rtol=1e-6))
+
 
 if __name__ == "__main__":
     unittest.main()
