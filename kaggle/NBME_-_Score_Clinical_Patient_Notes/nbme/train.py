@@ -143,7 +143,7 @@ class TrainModel:
                 outputs = self._model(inputs)
                 loss = self._loss_func(outputs.view(-1, 1), labels.view(-1, 1))
                 loss = torch.masked_select(loss, labels.view(-1, 1) != -1).mean()
-                running_loss.append(loss.cpu())
+                running_loss.append(loss.detach().item())
                 # torch.masked_select gets tensor and boolean mask (like [True, False, ..., False]) as input
                 # and returns 1D tensor with values which has True value in corresponding element in mask
                 loss = loss / self._train_cfg.iters_to_accumulate
@@ -171,7 +171,7 @@ class TrainModel:
                 self._optimizer.zero_grad()
 
             # plot metrics results
-            if self._train_cfg.verbose_step and not ((step + 1) % self._train_cfg.verbose_step):
+            if self._train_cfg.verbose_step and (not ((step + 1) % self._train_cfg.verbose_step) or step == 0):
                 # print results
                 LOGGER.info("Step [{}] loss: {:.4f}".format(step + 1, running_loss[-1]))
 
@@ -210,10 +210,10 @@ class TrainModel:
             outputs = self._model(inputs)
             loss = self._loss_func(outputs.view(-1, 1), labels.view(-1, 1))
             loss = torch.masked_select(loss, labels.view(-1, 1) != -1).mean()
-            running_loss.append(loss.cpu())
+            running_loss.append(loss.detach().item())
       
             # plot metrics results
-            if self._train_cfg.verbose_step and not ((step + 1) % self._train_cfg.verbose_step):
+            if self._train_cfg.verbose_step and (not ((step + 1) % self._train_cfg.verbose_step) or step == 0):
                 # print results
                 LOGGER.info("Step [{}] loss:\t{:.4f}".format(step + 1, running_loss[-1]))
 
@@ -229,4 +229,5 @@ class TrainModel:
                     
             # increase global step value
             self._global_step_eval += 1
+        return np.mean(running_loss)
             
