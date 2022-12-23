@@ -12,17 +12,17 @@ data:
   n_workers: 0
 train:
   n_epochs: 5
-  device: "cpu"
+  device: "cuda"
   backbone_lr: 2e-5
   fc_lr: 2e-5
   weight_decay: 0.01
   betas: [0.9, 0.999]
   eps: 1e-8
-  scheduler_type: "linear"
-  num_warmup_steps: 0
+  scheduler_type: "cosine"
+  num_warmup_steps: 10
   num_cycles: 0.5
   use_autocast: True
   iters_to_accumulate: 4
-  max_gradient_norm: 4
-  verbose_step: 50
+  max_gradient_norm: 10
+  verbose_step: 1
   

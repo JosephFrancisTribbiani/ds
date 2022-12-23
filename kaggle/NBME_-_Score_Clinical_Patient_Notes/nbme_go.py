@@ -55,8 +55,11 @@ def main(args) -> None:
         LOGGER.info("Train / Eval dataloaders preparation")
         trainloader, evalloader = prepare_dataloaders(
             dataset=dataset, tokenizer=tokenizer, fold=curr_fold, max_length=data_cfg.max_length,
-            batch_size=data_cfg.batch_size, n_workers=data_cfg.n_workers)
+            batch_size=data_cfg.batch_size, n_workers=data_cfg.n_workers, drop_last=args.drop_last)
         num_training_steps = len(trainloader) * train_cfg.n_epochs
+        if train_cfg.iters_to_accumulate > 1:
+            num_training_steps = \
+                num_training_steps // train_cfg.iters_to_accumulate + (1 if num_training_steps % train_cfg.iters_to_accumulate else 0)
         LOGGER.info("Done")
 
         # train model from the current fold
@@ -79,5 +82,6 @@ if __name__ == "__main__":
                         help="Location to save trained models.")
     parser.add_argument("--run", type=str, default="./runs/", 
                         help="Location to save trainig metrics.")
+    parser.add_argument("--drop-last", action="store_true", help="True if to drop last batch")
     args = parser.parse_args()
     main(args=args)

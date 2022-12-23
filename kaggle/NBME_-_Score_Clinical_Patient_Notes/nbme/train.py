@@ -128,7 +128,7 @@ class TrainModel:
         running_loss = list()
     
         self._model.train()
-        for step, (inputs, labels) in enumerate(trainloader):
+        for step, (inputs, labels) in tqdm(enumerate(trainloader), total=len(trainloader)):
             # reset peaks of CUDA usage
             if self._device == "cuda":
                 torch.cuda.reset_peak_memory_stats(device=self._device)
@@ -197,7 +197,7 @@ class TrainModel:
         running_loss = list()
     
         self._model.eval()
-        for step, (inputs, labels) in enumerate(evalloader):
+        for step, (inputs, labels) in tqdm(enumerate(evalloader), total=len(evalloader)):
             # reset peaks of CUDA usage
             if self._device == "cuda":
                 torch.cuda.reset_peak_memory_stats(device=self._device)

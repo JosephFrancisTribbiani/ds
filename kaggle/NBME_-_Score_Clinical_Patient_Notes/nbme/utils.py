@@ -77,14 +77,15 @@ class TrainConfig:
 
 
 def prepare_dataloaders(dataset: pd.DataFrame, tokenizer: torch.nn, fold: int, max_length: int, 
-                        batch_size: int, n_workers: int) -> Tuple[DataLoader, DataLoader]:
+                        batch_size: int, n_workers: int, drop_last: bool = False) -> Tuple[DataLoader, DataLoader]:
     """
     Prepare train and eval dataloaders for specified fold for CV.
     :param dataset: dataframe with column "fold", which specified the fold number
     :param tokenzier: autotokenizer from hugging face
     :param fold: number of fold using for eval set
     :param batch_size: batch size - the parameter of a DataLoader
-    :n_workers: number of workers - the parameter of a DataLoader
+    :param n_workers: number of workers - the parameter of a DataLoader
+    :param drop_last: see DataLoader documentation
     :return: DataLoader for training, size of train set and DataLoader for evaluation
     """
     # trainloader preparation
@@ -94,7 +95,7 @@ def prepare_dataloaders(dataset: pd.DataFrame, tokenizer: torch.nn, fold: int, m
                            pn_histories=train_df['pn_history'].values, locations=train_df['location'].values,
                            max_length=max_length)
     trainloader = DataLoader(dataset=trainset, batch_size=batch_size, shuffle=True, 
-                             num_workers=n_workers, pin_memory=True, drop_last=True)
+                             num_workers=n_workers, pin_memory=True, drop_last=drop_last)
     
     # evalloader preparation
     eval_df = dataset[dataset['fold'] == fold]
