@@ -115,7 +115,7 @@ class TrainModel:
                 torch.save({"epoch": epoch + 1, "model_state_dict": self._model.state_dict(), 
                            "loss": avg_loss_eval}, model_loc)
                 LOGGER.info("Model saved")  
-            self.best_loss_eval = min(avg_loss_eval, self.best_loss_eval)
+            self._best_loss_eval = min(avg_loss_eval, self._best_loss_eval)
               
             # clean up cache
             if self._device == "cuda":
