@@ -6,7 +6,6 @@ class TestModel(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from utils import intersection_over_union
         from model import YOLOv1
 
         cls.model = YOLOv1(

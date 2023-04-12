@@ -5,9 +5,16 @@ from typing import Tuple, Union
 def intersection_over_union(bbox_a: torch.tensor, bbox_b: torch.tensor, 
                             epsilon: float = 1e-6) -> torch.tensor:
     """
-    Function for IoU calculation
+    Функция рассчета IoU. На вход принимает два bounding box и рассчитывает IoU между ними.
     :param bbox_a: first bounding box parameters [x, y, w, h]
+                   где x и y - координаты центра bounding box
+                   h и w - ширина и высота
     :param bbox_b: second bounding box parameters [x, y, w, h]
+                   где x и y - координаты центра bounding box
+                   h и w - ширина и высота
+    :param epsilon: в случае, когда Union между двумя bounding boxes равен 0, в формуле рассчета 
+                    IoU мы получаем деление на 0 (т.к. Union стоит в знаменателе). Чтобы избежать 
+                    деление на 0 к Union добавляется константа epsilon, default to 1e-6
     """
     # rectangle defined by top-left and bottom-right coordinates
     a_xmin, a_xmax, a_ymin, a_ymax = \
@@ -90,6 +97,7 @@ def extend_target(target: torch.tensor, bestbox: torch.tensor, bestbox_iou: torc
     extended_target = extended_target.scatter(-1, bestbox*5, target[..., [0]]*bestbox_iou)
     extended_target[..., 5*n_anchors:] = target[..., 5:]
     return extended_target
+
 
 def get_mask(size: Tuple[int], has_object: torch.tensor, bestbox: torch.tensor, n_anchors: int = 2, 
              lambda_coord: Union[int, float] = 5, lambda_noobj: Union[int, float] = 0.5) -> torch.tensor:
