@@ -1,6 +1,7 @@
 *.ipynb_checkpoints
 Thermals_finder/parse_xcontest/data/
 venv/
+.venv
 __pycache__/
 .idea/
 .vscode
