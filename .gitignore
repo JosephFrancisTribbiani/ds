@@ -4,6 +4,7 @@ venv/
 .venv
 __pycache__/
 .idea/
+.data/
 .vscode
 catboost_info/
 Interviews/sber_reliability_-_data_scientist_nlp/tf_idf_preprocessed_data.txt
