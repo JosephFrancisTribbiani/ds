@@ -3,3 +3,5 @@
 1. Подход к извлечению тренда ([ноутбук](./trend_tedection_algorithm.ipynb))
     1. Линейного
     2. Полиномиального
+2. Новая модель TSModel в модуле [tsforecast](./tsforecast/utils.py)
+3. Оценка качества в [ноутбуке](./evaluation.ipynb)

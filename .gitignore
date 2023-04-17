@@ -18,3 +18,15 @@ PyTorch_tutorials/YOLOv1_from_scratch/airplanes.json
 PyTorch_tutorials/YOLOv1_from_scratch/airplanes.jpg
 PyTorch_tutorials/YOLOv1_from_scratch/sqlite3.def
 PyTorch_tutorials/YOLOv1_from_scratch/sqlite3.dll
+Tasks/object_detection_yolo/Videos/bikes.mp4
+Tasks/object_detection_yolo/Videos/cars.mp4
+Tasks/object_detection_yolo/Videos/motorbikes.mp4
+Tasks/object_detection_yolo/Videos/people.mp4
+Tasks/object_detection_yolo/Videos/ppe-1.mp4
+Tasks/object_detection_yolo/Videos/ppe-2.mp4
+Tasks/object_detection_yolo/Videos/ppe-3.mp4
+Tasks/object_detection_yolo/Yolo_weights/yolov8l.pt
+Tasks/object_detection_yolo/Yolo_weights/yolov8n.pt
+.python-version
+Tasks/ts_foracasting_model/forecast.csv
+Tasks/ts_foracasting_model/logs.txt
