@@ -35,7 +35,8 @@ class TSModel:
 
     def __init__(self, h_size: int = 28, trend: Literal["linear", "polynomial"] = "linear", p_degree: int = 2,
                  roles: dict = {}, seasonal_type: Union[int, Literal["weekly", "daily"]] = "weekly", 
-                 agg_f: Literal["mean", "median"] = "median", model_type: Literal["additive", "multiplicative"] = "additive") -> None:
+                 agg_f: Literal["mean", "median"] = "median", model_type: Literal["additive", "multiplicative"] = "additive",
+                 holidays: pd.DataFrame = None, freq: int = 1) -> None:
         """
         :param h_size: размер обучающей выборки количестве значений (в днях)
         :param trend: тип детектируемого тренда ("linear" или "polynomial")
@@ -52,6 +53,8 @@ class TSModel:
         self.seasonal_type = seasonal_type
         self.agg_f = agg_f
         self.model_type = model_type
+        self.holidays = holidays
+        self.freq = freq
 
     def fit_predict(self, data: pd.DataFrame, horizon: int = 1) -> pd.DataFrame:
         """
@@ -66,11 +69,11 @@ class TSModel:
         return forecast, trend, seasonal
 
     def fit(self, data: pd.DataFrame) -> None:
-        # определяем дискретность наших данных (в минутах)
-        # и количество данных для обучения
-        ts_1 = data[self.roles.get("datetime")].iloc[-1]
-        ts_2 = data[self.roles.get("datetime")].iloc[-2]
-        self.freq = int((ts_1 - ts_2).total_seconds() // 60)
+        """
+        :param data: DataFrame с колонками даты и значения
+                     значения должны быть без пропусков в timeline
+        """
+        # количество данных для обучения
         self.h_size_items = int(self.h_size * (24 * 60) // self.freq)
 
         # если размер истории меньше, чем выставленный параметр размера истории
@@ -78,7 +81,10 @@ class TSModel:
         self.h_size_items = min(len(data), self.h_size_items)
 
         # настраиваем тренд
-        fit_data = data.iloc[-self.h_size_items:, :]
+        fit_data = data.iloc[-self.h_size_items:, :]  # обучающая выборка
+        self.discard_mask = fit_data[self.roles.get("value")].isna().values
+        if self.holidays is not None:
+            self.discard_mask |= fit_data[self.roles.get("datetime")].dt.normalize().isin(self.holidays["datetime"]).values
         y = fit_data[self.roles.get("value")].values
         detrended = self.fit_trend_(y=y)
 
@@ -86,11 +92,11 @@ class TSModel:
         self.fit_seasonal_(y=detrended)
         return
     
-    def fit_trend_(self, y: list) -> None:
+    def fit_trend_(self, y: np.ndarray) -> None:
         # инициализируем модель линейной регрессии
         self.lr = LinearRegression()
         x = self.trend_features_generation_()
-        self.lr.fit(x, y)
+        self.lr.fit(x[~self.discard_mask], y[~self.discard_mask])
         trend = self.lr.predict(x)
 
         if self.model_type == "additive":
@@ -121,6 +127,7 @@ class TSModel:
         return x
     
     def fit_seasonal_(self, y: np.ndarray) -> None:
+        y_filtered = np.where(~self.discard_mask, y, np.nan)
         
         if isinstance(self.seasonal_type, int):
             sl = self.seasonal_type
@@ -132,12 +139,12 @@ class TSModel:
             raise ValueError("Wrong seasonal component.")
         
         if self.h_size_items % sl:
-            self.seasonal = np.insert(arr=y.astype("float"), obj=[0]*(sl - self.h_size_items % sl), values=np.nan)
+            self.seasonal = np.insert(arr=y_filtered.astype("float"), obj=[0]*(sl - self.h_size_items % sl), values=np.nan)
             self.seasonal = np.reshape(self.seasonal, newshape=(sl, -1), order="F")
             agg_f = getattr(np, "nan" + self.agg_f)
         else:
-            self.seasonal = np.reshape(y, newshape=(sl, -1), order="F")
-            agg_f = getattr(np, self.agg_f)
+            self.seasonal = np.reshape(y_filtered, newshape=(sl, -1), order="F")
+            agg_f = getattr(np, "nan" + self.agg_f)
             
         self.seasonal = agg_f(self.seasonal, axis=1)
         return
