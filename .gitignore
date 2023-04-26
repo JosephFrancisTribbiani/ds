@@ -30,3 +30,5 @@ Tasks/object_detection_yolo/Yolo_weights/yolov8n.pt
 .python-version
 Tasks/ts_foracasting_model/forecast.csv
 Tasks/ts_foracasting_model/logs.txt
+Tasks/ts_foracasting_model/forecast_holidays.csv
+Tasks/ts_foracasting_model/logs_holidays.txt
