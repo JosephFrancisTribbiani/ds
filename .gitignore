@@ -35,3 +35,4 @@ Tasks/ts_foracasting_model/logs_holidays.txt
 Tasks/object_detection_yolo/Project 3 - PPE Detection/runs/detect/train/weights/best.pt
 Tasks/object_detection_yolo/Project 3 - PPE Detection/runs/detect/train/weights/last.pt
 Tasks/object_detection_yolo/Project 2 - People Counter/output.mp4
+Tasks/object_detection_yolo/Project 1 - Car Counter/output.mp4

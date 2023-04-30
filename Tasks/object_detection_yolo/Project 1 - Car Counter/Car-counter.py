@@ -28,6 +28,7 @@ CURR_DIR = Path(__file__).resolve().parent
 VIDEO_PATH = str(CURR_DIR.parent / "Videos" / "cars.mp4")
 MODEL_PT = str(CURR_DIR.parent / "Yolo_weights" / "yolov8l.pt")
 MASK_PATH  = str(CURR_DIR / "mask.jpg")
+OUTPUT = str(CURR_DIR / "output.mp4")
 LIMITS = [220, 360, 780, 360]  # line between two point with format xyxy
 MARGIN = 15
 
@@ -45,7 +46,10 @@ tracker = sort.Sort(max_age=20, min_hits=3, iou_threshold=0.3)
 # model initialization
 model = YOLO(model=MODEL_PT)
 
-while True:
+# Define the codec and create VideoWriter object
+fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+out = cv2.VideoWriter(OUTPUT, fourcc, 30.0, (1280, 720))
+while (cap.isOpened()):
 
     # launch video and apply maks bitwise
     success, img = cap.read()
@@ -85,7 +89,7 @@ while True:
 
     LOGGER.debug("Tracking results:")
     tracker_results = tracker.update(detections)
-    cv2.line(img=img, pt1=(LIMITS[0], LIMITS[1]), pt2=(LIMITS[2], LIMITS[3]), color=(0, 0, 255), thickness=5)
+    # cv2.line(img=img, pt1=(LIMITS[0], LIMITS[1]), pt2=(LIMITS[2], LIMITS[3]), color=(0, 0, 255), thickness=5)
 
     for x1, y1, x2, y2, id in tracker_results:
         x1, y1, x2, y2, id = int(x1), int(y1), int(x2), int(y2), int(id)
@@ -101,7 +105,7 @@ while True:
         
         # center of the bbox and plot circles
         xc, yc = round((x1 + x2) / 2), round((y1 + y2) / 2)
-        cv2.circle(img=img, center=(xc, yc), radius=5, color=(255, 0, 255), thickness=cv2.FILLED)
+        # cv2.circle(img=img, center=(xc, yc), radius=5, color=(255, 0, 255), thickness=cv2.FILLED)
 
         if LIMITS[0] < xc < LIMITS[2] and LIMITS[1] - MARGIN < yc < LIMITS[3] + MARGIN:
             if total_count.count(id) == 0:
@@ -109,6 +113,13 @@ while True:
 
     # show total count
     cvzone.putTextRect(img=img, text="Cars: %s" % len(total_count), pos=(50, 50))
-
+    out.write(img)
     cv2.imshow("Image", img)
-    cv2.waitKey(1)
+
+    # выход при нажатии клавиши ESC
+    if cv2.waitKey(1) == 27:
+        break
+
+cap.release()
+out.release()
+cv2.destroyAllWindows()
