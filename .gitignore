@@ -32,3 +32,5 @@ Tasks/ts_foracasting_model/forecast.csv
 Tasks/ts_foracasting_model/logs.txt
 Tasks/ts_foracasting_model/forecast_holidays.csv
 Tasks/ts_foracasting_model/logs_holidays.txt
+Tasks/object_detection_yolo/Project 3 - PPE Detection/runs/detect/train/weights/best.pt
+Tasks/object_detection_yolo/Project 3 - PPE Detection/runs/detect/train/weights/last.pt
