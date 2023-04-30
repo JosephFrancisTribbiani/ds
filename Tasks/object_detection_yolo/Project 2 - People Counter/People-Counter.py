@@ -8,7 +8,7 @@ from ultralytics import YOLO
 from pathlib import Path
 
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s:%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s:%(message)s")
 LOGGER = logging.getLogger(__name__)
 
 PERSON_CLASS_NUM = 0
@@ -16,6 +16,7 @@ CURR_DIR = Path(__file__).resolve().parent
 VIDEO_PATH = str(CURR_DIR.parent / "Videos" / "people.mp4")
 MODEL_PT = str(CURR_DIR.parent / "Yolo_weights" / "yolov8n.pt")
 MASK_PATH  = str(CURR_DIR / "mask.jpg")
+OUTPUT = str(CURR_DIR / "output.mp4")
 
 # define limits (lines between two point with format xyxy)
 LIMITS_UP =   [103, 161, 296, 161]  # for people going up
@@ -37,10 +38,17 @@ tracker = sort.Sort(max_age=20, min_hits=3, iou_threshold=0.3)
 # model initialization
 model = YOLO(model=MODEL_PT)
 
-while True:
+# Define the codec and create VideoWriter object
+fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+out = cv2.VideoWriter(OUTPUT, fourcc, 30.0, (1280, 720))
+while (cap.isOpened()):
 
     # launch video and apply maks bitwise
     success, img = cap.read()
+
+    if not success:
+        continue
+
     img_region = cv2.bitwise_and(img, mask)
 
     # show grahpics
@@ -80,8 +88,8 @@ while True:
 
     LOGGER.debug("Tracking results:")
     tracker_results = tracker.update(detections)
-    cv2.line(img=img, pt1=(LIMITS_UP[0], LIMITS_UP[1]), pt2=(LIMITS_UP[2], LIMITS_UP[3]), color=(0, 0, 255), thickness=5)
-    cv2.line(img=img, pt1=(LIMITS_DOWN[0], LIMITS_DOWN[1]), pt2=(LIMITS_DOWN[2], LIMITS_DOWN[3]), color=(0, 0, 255), thickness=5)
+    # cv2.line(img=img, pt1=(LIMITS_UP[0], LIMITS_UP[1]), pt2=(LIMITS_UP[2], LIMITS_UP[3]), color=(0, 0, 255), thickness=5)
+    # cv2.line(img=img, pt1=(LIMITS_DOWN[0], LIMITS_DOWN[1]), pt2=(LIMITS_DOWN[2], LIMITS_DOWN[3]), color=(0, 0, 255), thickness=5)
 
     for x1, y1, x2, y2, id in tracker_results:
         x1, y1, x2, y2, id = int(x1), int(y1), int(x2), int(y2), int(id)
@@ -97,7 +105,7 @@ while True:
         
         # center of the bbox and plot circles
         xc, yc = round((x1 + x2) / 2), round((y1 + y2) / 2)
-        cv2.circle(img=img, center=(xc, yc), radius=5, color=(255, 0, 255), thickness=cv2.FILLED)
+        # cv2.circle(img=img, center=(xc, yc), radius=5, color=(255, 0, 255), thickness=cv2.FILLED)
 
         # count people going up
         if LIMITS_UP[0] < xc < LIMITS_UP[2] and LIMITS_UP[1] - MARGIN < yc < LIMITS_UP[3] + MARGIN:
@@ -113,5 +121,13 @@ while True:
     cv2.putText(img=img, text="%s" % len(count_up),   org=(929, 345),  fontFace=cv2.FONT_HERSHEY_PLAIN, fontScale=5, color=(139, 195, 75), thickness=7)
     cv2.putText(img=img, text="%s" % len(count_down), org=(1191, 345), fontFace=cv2.FONT_HERSHEY_PLAIN, fontScale=5, color=(50, 50, 230),  thickness=7)
 
+    out.write(img)
     cv2.imshow("Image", img)
-    cv2.waitKey(1)
+
+    # выход при нажатии клавиши ESC
+    if cv2.waitKey(1) == 27:
+        break
+
+cap.release()
+out.release()
+cv2.destroyAllWindows()
