@@ -1,10 +1,12 @@
 import os
-import json
+import cv2
 import logging
+import numpy as np
+import face_recognition
 import PySimpleGUI as sg
 from db import get_next_id, save_student
-from PIL import Image
 from pathlib import Path
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s:%(message)s")
 LOGGER = logging.getLogger(__name__)
@@ -41,7 +43,7 @@ LAYOUT = [
     ],
     [
         sg.Text("Записать в", size=(15, 1)),
-        sg.Input(size=(30, 1), key="-SAVELOC-", disabled=True, default_text=str(ROOT / "data")),
+        sg.Input(size=(30, 1), key="-SAVELOC-", disabled=True, default_text=str(ROOT / "data" / "faces")),
         sg.FolderBrowse(size=(8, 1), button_text="Открыть")
     ],
     [
@@ -51,6 +53,19 @@ LAYOUT = [
         sg.StatusBar("", size=(0, 1), key='-STATUS-')
     ],
 ]
+
+
+def encode(face: np.ndarray) -> np.ndarray:
+    # firstly we have to convert BGR (uses by cv2) to RGB (uses by face_recognition)
+    face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
+
+    # encode the image
+    encoded = face_recognition.face_encodings(face)[0]
+    return encoded
+
+
+def get_face_loc(face: np.ndarray):
+    return
 
 
 def main() -> None:
@@ -100,23 +115,13 @@ def main() -> None:
                         LOGGER.debug("Создаем папку %s" % save_loc)
                         os.makedirs(save_loc)
 
-                    photo_path = os.path.join(save_loc, "photo")
-                    if not os.path.exists(photo_path):
-                        LOGGER.debug("Создаем папку %s" % photo_path)
-                        os.makedirs(photo_path)
-
-                    metadata_path = os.path.join(save_loc, "metadata")
-                    if not os.path.exists(metadata_path):
-                        LOGGER.debug("Создаем папку %s" % metadata_path)
-                        os.makedirs(metadata_path)
-
                     # получаем следующий свободный ID студента
                     LOGGER.debug("Получаем ID студента")
                     id = get_next_id()
                     LOGGER.debug("ID: %s" % id)
 
-                    # сохраняем метадату по студенту
-                    LOGGER.debug("Сохраняем метаданные")
+                    # собираем метаданные по студенту
+                    LOGGER.debug("Собираем метаданные")
                     metadata = dict(
                         id=id,
                         firstname=firstname,
@@ -125,22 +130,22 @@ def main() -> None:
                         major=major,
                         starting_year=starting_year,
                     )
-                    with open(os.path.join(metadata_path, "%s.json") % id, "w") as json_f:
-                        json.dump(metadata, json_f)
+
+                    # получаем эмбеддинги лица
+                    LOGGER.debug("Получаем эмбеддинг лица")
+                    photo = cv2.imread(photo_loc)
+                    photo = cv2.resize(photo, (216, 216), interpolation=cv2.INTER_LINEAR)
+                    emb = encode(face=photo)
 
                     # сохраняем фотографию
-                    LOGGER.debug("Сохраняем фотографию")
                     _, ext = os.path.splitext(photo_loc)
-                    photo = Image.open(photo_loc)
-                    photo = photo.resize((216, 216), resample=Image.BILINEAR)
-                    photo.save(os.path.join(photo_path, "%s%s" % (id, ext)))
+                    cv2.imwrite(os.path.join(save_loc, "%s%s" % (id, ext)), )
 
                     # записываем в базу
                     save_student(**metadata)
                     LOGGER.debug("Данные сохранены")
 
                     state = "Данные сохранены"
-                
                 else:
                     state = "Поля не заполнены / запонены не верно"
 

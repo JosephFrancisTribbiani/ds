@@ -1,4 +1,5 @@
 import psycopg2
+import argparse
 from functools import wraps
 from config import DATABASE_URL
 
@@ -39,10 +40,8 @@ def init_db(conn, cur, force: bool = False, hidden_size: int = 128) -> None:
         firstname TEXT NOT NULL,
         secondname TEXT NOT NULL,
         standing CHAR NOT NULL,
-        last_attendance_time TIMESTAMP WITH TIME ZONE,
         major TEXT NOT NULL,
-        starting_year INTEGER NOT NULL,
-        total_attendance INTEGER NOT NULL DEFAULT 0
+        starting_year INTEGER NOT NULL
     );
     
     COMMENT ON TABLE students
@@ -60,24 +59,18 @@ def init_db(conn, cur, force: bool = False, hidden_size: int = 128) -> None:
     COMMENT ON COLUMN students.standing
     IS 'Статус';
 
-    COMMENT ON COLUMN students.last_attendance_time
-    IS 'Дата и время последнего посещения (с timezone)';
-
     COMMENT ON COLUMN students.major
     IS 'Специализация';
 
     COMMENT ON COLUMN students.starting_year
-    IS 'Год начала обучения';
-
-    COMMENT ON COLUMN students.total_attendance
-    IS 'Общее количество посещений';"""
+    IS 'Год начала обучения';"""
     cur.execute(query_students)
 
     sub_query = ",\n\t".join(map(lambda idx: '"%s" DOUBLE PRECISION NOT NULL' % idx, range(1, 1 + hidden_size)))
     query_embeddings = """
     CREATE TABLE IF NOT EXISTS embeddings
     (   
-        emb_id INTEGER PRIMARY KEY,
+        emb_id SERIAL PRIMARY KEY,
         student_id INTEGER NOT NULL REFERENCES students (id),
         writetime TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
         %s
@@ -96,6 +89,24 @@ def init_db(conn, cur, force: bool = False, hidden_size: int = 128) -> None:
     IS 'Дата и время записи эмбеддинга (с timezone)';
     """ % sub_query
     cur.execute(query_embeddings)
+
+    query_attendance = """
+    CREATE TABLE IF NOT EXISTS attendace
+    (
+        student_id INTEGER REFERENCES students (id),
+        attendance_datetime TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+    );
+
+    COMMENT ON TABLE attendace
+    IS 'Таблица с информацией о посещениях';
+
+    COMMENT ON COLUMN attendace.student_id
+    IS 'Уникальный ID студента';
+
+    COMMENT ON COLUMN attendace.attendance_datetime
+    IS 'Дата и время посещения (с timezone)';
+    """
+    cur.execute(query_attendance)
     
     conn.commit()
     return
@@ -139,3 +150,17 @@ def save_student(id: int, firstname: str, secondname: str, standing: str,
     cur.execute(query, (id, firstname, secondname, standing, major, starting_year))
     conn.commit()
     return
+
+
+def main(args) -> None:
+    init_db(force=args.force, hidden_size=args.hidden)
+    return
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Создание таблиц в БД.")
+    parser.add_argument("--hidden", "-H", type=int, default=128, help="Размер эмбеддинга лица.")
+    parser.add_argument("-force", "-F", action="store_true", help="Если флаг стоит, то таблицы пересоздаются")
+    args = parser.parse_args()
+
+    main(args)
