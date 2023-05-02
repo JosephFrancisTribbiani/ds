@@ -1,5 +1,6 @@
 import psycopg2
 import argparse
+import numpy as np
 from functools import wraps
 from config import DATABASE_URL
 
@@ -41,7 +42,8 @@ def init_db(conn, cur, force: bool = False, hidden_size: int = 128) -> None:
         secondname TEXT NOT NULL,
         standing CHAR NOT NULL,
         major TEXT NOT NULL,
-        starting_year INTEGER NOT NULL
+        starting_year INTEGER NOT NULL,
+        writetime TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT now()
     );
     
     COMMENT ON TABLE students
@@ -63,16 +65,19 @@ def init_db(conn, cur, force: bool = False, hidden_size: int = 128) -> None:
     IS 'Специализация';
 
     COMMENT ON COLUMN students.starting_year
-    IS 'Год начала обучения';"""
+    IS 'Год начала обучения';
+    
+    COMMENT ON COLUMN students.writetime
+    IS 'Дата и время записи';"""
     cur.execute(query_students)
 
     sub_query = ",\n\t".join(map(lambda idx: '"%s" DOUBLE PRECISION NOT NULL' % idx, range(1, 1 + hidden_size)))
     query_embeddings = """
     CREATE TABLE IF NOT EXISTS embeddings
     (   
-        emb_id SERIAL PRIMARY KEY,
+        emb_id SERIAL,
         student_id INTEGER NOT NULL REFERENCES students (id),
-        writetime TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+        writetime TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT now(),
         %s
     );
 
@@ -94,7 +99,7 @@ def init_db(conn, cur, force: bool = False, hidden_size: int = 128) -> None:
     CREATE TABLE IF NOT EXISTS attendace
     (
         student_id INTEGER REFERENCES students (id),
-        attendance_datetime TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+        attendance_datetime TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT now()
     );
 
     COMMENT ON TABLE attendace
@@ -148,6 +153,22 @@ def save_student(id: int, firstname: str, secondname: str, standing: str,
     VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;
     """
     cur.execute(query, (id, firstname, secondname, standing, major, starting_year))
+    conn.commit()
+    return
+
+
+@get_connection
+def save_embedding(id: int, emb: np.ndarray, conn, cur) -> None:
+    """
+    Функция сохранения эмбеддинга в БД
+    :param id: уникальный ID студента
+    :param emb: эмбеддинг лица
+    """
+    query = """
+    INSERT INTO embeddings (student_id, "{}")
+    VALUES (%s, {})
+    """.format('", "'.join(map(str, range(1, len(emb) + 1))), ", ".join(["%s"]*len(emb)))
+    cur.execute(query, (id, *emb))
     conn.commit()
     return
 
