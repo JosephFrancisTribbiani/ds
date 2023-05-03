@@ -51,7 +51,7 @@ while (cap.isOpened()):
 
     img_region = cv2.bitwise_and(img, mask)
 
-    # show grahpics
+    # show graphics
     img_graphics = cv2.imread(str(CURR_DIR / "graphics.png"), cv2.IMREAD_UNCHANGED)
     img = cvzone.overlayPNG(imgBack=img, imgFront=img_graphics, pos=(730, 260))
 

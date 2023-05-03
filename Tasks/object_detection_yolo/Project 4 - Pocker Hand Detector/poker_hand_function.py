@@ -3,12 +3,45 @@ from typing import List, Tuple, Literal, Union
 from collections import Counter
 
 
+def parse_hand(hand: Union[List[str], str], 
+               pattern: str = r"([AKQJ]|[0-9]{1,2})([HCDS])") -> Tuple[List[Union[int, str]]]:
+    ranks = []
+    suits = []
+
+    for card in hand:
+        rank, suit = parse_card(card=card, pattern=pattern)
+        ranks.append(rank)
+        suits.append(suit)
+
+    return ranks, suits
+
+def parse_card(card: str, pattern: str = r"([AKQJ]|[0-9]{1,2})([HCDS])") -> Tuple[str, str]:
+    # Ranks:
+    #   A - туз
+    #   K - король
+    #   Q - королева
+    #   J - валет
+    #   4 ... 10 - численные значения
+    #
+    # Suits
+    #   H - черви  (Hearts)
+    #   С - крести (Clubs)
+    #   D - бубны  (Diamonds)
+    #   S - пики   (spades)
+    parsed = re.search(pattern=pattern, string=card, flags=re.IGNORECASE)
+    rank = parsed.group(1)
+    if rank.isdigit():
+        rank = int(rank)
+    suit = parsed.group(2)
+    return rank, suit
+
+
 class CheckHand:
     def __init__(self, pattern: str = r"([AKQJ]|[0-9]{1,2})([HCDS])") -> None:
         self.pattern = pattern
 
     def __call__(self, hand: List[str]):
-        ranks, suits = self.parse_hand(hand=hand)
+        ranks, suits = parse_hand(hand=hand, pattern=self.pattern)
         combs = [
             "Royal flush",
             "Straight flush",
@@ -28,35 +61,6 @@ class CheckHand:
                 return comb
 
         return "Hight card"
-
-    def parse_hand(self, hand: List[str]) -> Tuple[List[Union[int, str]]]:
-        # Ranks:
-        #   A - туз
-        #   K - король
-        #   Q - королева
-        #   J - валет
-        #   4 ... 10 - численные значения
-        #
-        # Suits
-        #   H - черви  (Hearts)
-        #   С - крести (Clubs)
-        #   D - бубны  (Diamonds)
-        #   S - пики   (spades)
-
-        ranks = []
-        suits = []
-
-        for card in hand:
-            parsed = re.search(pattern=self.pattern, string=card, flags=re.IGNORECASE)
-            rank = parsed.group(1)
-            if rank.isdigit():
-                rank = int(rank)
-            suit = parsed.group(2)
-            
-            ranks.append(rank)
-            suits.append(suit)
-
-        return ranks, suits
     
     def check_royal_flush(self, ranks: List[Union[int, str]], suits: List[Union[int, str]]) -> bool:
         cr = Counter(ranks)
@@ -110,10 +114,3 @@ class CheckHand:
         cr = Counter(ranks)
         return Counter(cr.values())[2] == 1
     
-
-def find_poker_hand() -> str:
-    return
-
-
-if __name__ == "__main__":
-    find_poker_hand()

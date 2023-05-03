@@ -3,6 +3,7 @@ import argparse
 import numpy as np
 from functools import wraps
 from config import DATABASE_URL
+from typing import Tuple, List
 
 
 def get_connection(func):
@@ -171,6 +172,33 @@ def save_embedding(id: int, emb: np.ndarray, conn, cur) -> None:
     cur.execute(query, (id, *emb))
     conn.commit()
     return
+
+
+@get_connection
+def read_embeddings(conn, cur, hidden_size: int = 128) -> Tuple[dict, np.ndarray]:
+    metacols = ["id", "firstname", "secondname", "standing", "major", "starting_year"]
+
+    query = """
+    SELECT 
+        %s,
+        %s
+    FROM students AS st
+    LEFT JOIN
+    (
+        SELECT DISTINCT ON (student_id) * FROM embeddings
+        ORDER BY student_id, writetime DESC
+    ) AS emb
+    ON st.id = emb.student_id
+    """ % (
+        ",\n    ".join(map(lambda c: 'st.%s' % c, metacols)),
+        ",\n    ".join(map(lambda c: 'emb."%s"' % (c + 1),range(hidden_size)))
+        )
+    
+    cur.execute(query)
+    data = cur.fetchall()
+    metadata = [dict(zip(metacols, d[:len(metacols)])) for d in data]
+    embeddings = [np.array(list(d[len(metacols):]), dtype="float64") for d in data]
+    return metadata, embeddings
 
 
 def main(args) -> None:
