@@ -3,7 +3,7 @@ import argparse
 import numpy as np
 from functools import wraps
 from config import DATABASE_URL
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 
 def get_connection(func):
@@ -97,19 +97,19 @@ def init_db(conn, cur, force: bool = False, hidden_size: int = 128) -> None:
     cur.execute(query_embeddings)
 
     query_attendance = """
-    CREATE TABLE IF NOT EXISTS attendace
+    CREATE TABLE IF NOT EXISTS attendance
     (
         student_id INTEGER REFERENCES students (id),
         attendance_datetime TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT now()
     );
 
-    COMMENT ON TABLE attendace
+    COMMENT ON TABLE attendance
     IS 'Таблица с информацией о посещениях';
 
-    COMMENT ON COLUMN attendace.student_id
+    COMMENT ON COLUMN attendance.student_id
     IS 'Уникальный ID студента';
 
-    COMMENT ON COLUMN attendace.attendance_datetime
+    COMMENT ON COLUMN attendance.attendance_datetime
     IS 'Дата и время посещения (с timezone)';
     """
     cur.execute(query_attendance)
@@ -176,29 +176,70 @@ def save_embedding(id: int, emb: np.ndarray, conn, cur) -> None:
 
 @get_connection
 def read_embeddings(conn, cur, hidden_size: int = 128) -> Tuple[dict, np.ndarray]:
-    metacols = ["id", "firstname", "secondname", "standing", "major", "starting_year"]
-
     query = """
-    SELECT 
-        %s,
-        %s
-    FROM students AS st
-    LEFT JOIN
-    (
-        SELECT DISTINCT ON (student_id) * FROM embeddings
-        ORDER BY student_id, writetime DESC
-    ) AS emb
-    ON st.id = emb.student_id
-    """ % (
-        ",\n    ".join(map(lambda c: 'st.%s' % c, metacols)),
-        ",\n    ".join(map(lambda c: 'emb."%s"' % (c + 1),range(hidden_size)))
-        )
+    SELECT DISTINCT ON (student_id)
+        student_id, 
+        %s 
+    FROM embeddings
+    ORDER BY student_id, writetime DESC
+    """ % (",\n    ".join(map(lambda c: '"%s"' % (c + 1), range(hidden_size))))
     
     cur.execute(query)
-    data = cur.fetchall()
-    metadata = [dict(zip(metacols, d[:len(metacols)])) for d in data]
-    embeddings = [np.array(list(d[len(metacols):]), dtype="float64") for d in data]
-    return metadata, embeddings
+    embeddings = {row[0]: np.array(row[1:], dtype="float64") for row in cur.fetchall()}
+    return embeddings
+
+
+@get_connection
+def get_metadata(ids: Union[List[int], int], conn, cur) -> List:
+
+    if isinstance(ids, list) and len(ids) == 0:
+        return
+
+    query = """
+    SELECT st.id, st.firstname, st.secondname, st.standing, st.major, st.starting_year, att.n_att
+    FROM students AS st
+    LEFT JOIN 
+    (
+        SELECT student_id, count(*) AS n_att FROM attendance
+        GROUP BY student_id
+    ) AS att
+    ON st.id = att.student_id
+    WHERE st.id IN (%s)
+    """ % (", ".join(map(str, ids)) if isinstance(ids, list) else ids)
+    cur.execute(query)
+    metadata = cur.fetchall()
+    metanames = ["firstname", "secondname", "standing", "major", "starting_year", "n_att"]
+    metadata = {row[0]: dict(zip(metanames, row[1:])) for row in metadata}
+    return metadata
+
+
+@get_connection
+def mark_students(ids: Union[List[int], int], conn, cur, lim: int = 30) -> None:
+
+    if isinstance(ids, list) and len(ids) == 0:
+        return []
+
+    # отметить, если с последнего посещения прошло более 30 минут
+    query = """
+    WITH ids (student_id) AS (
+    VALUES (%s)
+    )
+    INSERT INTO attendance (student_id)
+        SELECT DISTINCT student_id FROM attendance
+        GROUP BY student_id
+        HAVING max(attendance_datetime) < (now() - INTERVAL '%s minutes')
+        AND student_id IN (SELECT student_id FROM ids)
+        UNION
+        SELECT student_id FROM ids
+        WHERE student_id NOT IN (SELECT DISTINCT student_id FROM attendance)
+    RETURNING student_id;
+    """ % ("), (".join(map(str, ids)) if isinstance(ids, list) else ids, lim)
+
+    # при этом возвращаем ID студентов, которых отметили
+    cur.execute(query)
+    conn.commit()
+    ids_marked = [id[0] for id in cur.fetchall()]
+    return ids_marked
 
 
 def main(args) -> None:

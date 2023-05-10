@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s:%(mess
 LOGGER = logging.getLogger(__name__)
 
 CURR_DIR = Path(__file__).resolve().parent
-MODEL_PT = str(CURR_DIR / "best.pt")
+MODEL_PT = str(CURR_DIR / "results" / "detect" / "train" / "weights" / "best.pt")
 # class names COCO
 CLASSNAMES = [
     "10C", "10D", "10H", "10S", 
@@ -109,12 +109,13 @@ def main():
 
                 # plot confidence and class name
                 cvzone.putTextRect(img=img, text="{} {:.2f}".format(class_name, conf), pos=(max(0, x_left_corner), max(35, y_left_corner - 10)), 
-                                scale=1, thickness=1, offset=3, colorR=(124, 255, 0), colorT=(0, 0, 0))
+                                   scale=1, thickness=1, offset=3, colorR=(124, 255, 0), colorT=(0, 0, 0))
             
             hand = [(card, sum(pos) / len(pos)) for card, pos in hand.items()]
             hand.sort(key=lambda val: val[1])
+            hand = [card for card, _ in hand]
             for idx in range(min(5, len(hand))):
-                card = hand[idx][0]
+                card = hand[idx]
                 x_pos = 310 + idx*140
                 card_loc = get_card_path(card=card)
                 img_card = cv2.imread(card_loc, cv2.IMREAD_UNCHANGED)
