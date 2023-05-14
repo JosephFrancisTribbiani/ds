@@ -176,41 +176,33 @@ def save_embedding(id: int, emb: np.ndarray, conn, cur) -> None:
 
 @get_connection
 def read_embeddings(conn, cur, hidden_size: int = 128) -> Tuple[dict, np.ndarray]:
-    query = """
-    SELECT DISTINCT ON (student_id)
-        student_id, 
-        %s 
-    FROM embeddings
-    ORDER BY student_id, writetime DESC
-    """ % (",\n    ".join(map(lambda c: '"%s"' % (c + 1), range(hidden_size))))
-    
-    cur.execute(query)
-    embeddings = {row[0]: np.array(row[1:], dtype="float64") for row in cur.fetchall()}
-    return embeddings
-
-
-@get_connection
-def get_metadata(ids: Union[List[int], int], conn, cur) -> List:
-
-    if isinstance(ids, list) and len(ids) == 0:
-        return
 
     query = """
-    SELECT st.id, st.firstname, st.secondname, st.standing, st.major, st.starting_year, att.n_att
-    FROM students AS st
+    SELECT
+        %s,
+	    st.id,
+	    st.firstname,
+	    st.secondname,
+	    st.major,
+	    st.starting_year,
+        att.n_att
+    FROM (
+        SELECT DISTINCT ON (student_id) *
+        FROM embeddings
+        ORDER BY student_id, writetime DESC
+    ) AS emb
+    LEFT JOIN students AS st
+    ON st.id = emb.student_id
     LEFT JOIN 
     (
         SELECT student_id, count(*) AS n_att FROM attendance
         GROUP BY student_id
     ) AS att
     ON st.id = att.student_id
-    WHERE st.id IN (%s)
-    """ % (", ".join(map(str, ids)) if isinstance(ids, list) else ids)
+    """ % (",\n    ".join(map(lambda c: '"%s"' % (c + 1), range(hidden_size))))
+    
     cur.execute(query)
-    metadata = cur.fetchall()
-    metanames = ["firstname", "secondname", "standing", "major", "starting_year", "n_att"]
-    metadata = {row[0]: dict(zip(metanames, row[1:])) for row in metadata}
-    return metadata
+    return cur.fetchall()
 
 
 @get_connection
