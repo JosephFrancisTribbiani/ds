@@ -194,11 +194,12 @@ def main() -> None:
                 else:      face_meta["status"] = "Already marked"
 
                 # добавляем в очередь, если нет
-                for qid, _, _ in q:
-                    if qid == id:
+                for i in range(len(q)):
+                    if q[i][0] == id:
+                        q[i][2] = time.time()
                         break
                 else:
-                    q.append((id, face_meta, time.time()))
+                    q.append([id, face_meta, time.time()])
                     if len(q) > MAX_Q:
                         q.popleft()
 
