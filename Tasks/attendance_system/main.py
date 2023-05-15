@@ -16,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent
 BACKGROUND_PATH = str(ROOT / "data" / "background.png")
 PHOTO_PATH = str(ROOT / "data" / "faces")
+OUTPUT = str(ROOT / "output.mp4")
 SCALE = 0.25
 TOL = 0.55
 MAX_Q = 5
@@ -140,8 +141,13 @@ def main() -> None:
     cap.set(3, 640)  # set width
     cap.set(4, 480)  # set hight
 
+    
+    # Define the codec and create VideoWriter object
+    fourcc = cv.VideoWriter_fourcc(*'MP4V')
+    out = cv.VideoWriter(OUTPUT, fourcc, 30.0, (1280, 720))
+
     q = deque()
-    while True:
+    while (cap.isOpened()):
         # read frame from webcap object
         success, frame = cap.read()
 
@@ -212,12 +218,15 @@ def main() -> None:
         # overlay background with webcam 
         background[162:162 + 480, 55:55 + 640] = frame
 
+        out.write(background)
+        cv.imshow("Face Attendance", background)
+
         # exit due to ESC key
         if cv.waitKey(1) == 27:
             break
-        
-        cv.imshow("Face Attendance", background)
 
+    cap.release()
+    out.release()
     cv.destroyAllWindows()
 
     return
@@ -225,3 +234,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    

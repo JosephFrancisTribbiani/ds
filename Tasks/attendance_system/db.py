@@ -242,7 +242,7 @@ def main(args) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Создание таблиц в БД.")
     parser.add_argument("--hidden", "-H", type=int, default=128, help="Размер эмбеддинга лица.")
-    parser.add_argument("-force", "-F", action="store_true", help="Если флаг стоит, то таблицы пересоздаются")
+    parser.add_argument("--force", "-F", action="store_true", help="Если флаг стоит, то таблицы пересоздаются")
     args = parser.parse_args()
 
     main(args)
