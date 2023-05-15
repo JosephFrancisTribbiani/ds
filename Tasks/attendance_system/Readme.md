@@ -64,7 +64,7 @@ python fill_meta.py
 
 Для запуска скрипта по контролю посещаемости необходимо запустить скрипт `main.py`. Результаты ниже:
 
-<img src="output.gif"></img>
+<img src="output.gif" border="2px"></img>
 
 Система знает:
 - меня
