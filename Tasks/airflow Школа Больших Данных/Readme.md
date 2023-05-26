@@ -2,6 +2,7 @@
 1. [Начало работы с apache airflow](https://www.youtube.com/watch?v=G6ipydgZRnE)
 2. [ETL на airflow](https://www.youtube.com/watch?v=XFQ0KPaDIT8&t)
 3. [ETL на airflow c postgresql](https://www.youtube.com/watch?v=55D9Eu7mUW0)
+4. [Что такое Apache Airflow](https://www.youtube.com/watch?v=OvwNEpgqYHo)
 
 # Установка и запуск AirFlow
 
